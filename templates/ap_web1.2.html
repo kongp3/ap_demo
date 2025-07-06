@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>审计管理应用平台 1.2</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #2c5e92;
+            --secondary: #1a3c5e;
+            --accent: #3e7cb1;
+            --success: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #dee2e6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --audit-blue: #2c5e92;
+            --audit-light: #e8f1f9;
+            --error: #dc3545;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            box-shadow: var(--shadow);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .logo-text {
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+        
+        .nav-links {
+            list-style: none;
+            padding: 0 15px;
+        }
+        
+        .nav-links li {
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .nav-links > li > a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            gap: 10px;
+        }
+        
+        .nav-links > li > a:hover, 
+        .nav-links > li > a.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        /* 子菜单样式 */
+        .submenu {
+            list-style: none;
+            padding-left: 40px;
+            margin-top: 5px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .submenu.active {
+            max-height: 500px;
+        }
+        
+        .submenu li a {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .submenu li a:hover,
+        .submenu li a.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .submenu li a.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 3px solid white;
+            padding-left: 12px;
+        }
+        
+        /* 主内容区样式 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f5f7fb;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .header h2 {
+            font-size: 1.8rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header h2 i {
+            color: var(--primary);
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        /* Tab导航样式 */
+        .tabs-container {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 5px;
+            box-shadow: var(--shadow);
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            border-radius: 5px;
+        }
+        
+        .tab:hover {
+            color: var(--primary);
+            background: #f0f7ff;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            font-weight: 600;
+            background: #e6f7ff;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary);
+        }
+        
+        /* 内容卡片样式 */
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to right, #f8f9fa, #e9f2ff);
+        }
+        
+        .card-header h3 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-header h3 i {
+            color: var(--accent);
+        }
+        
+        /* 表单顶部按钮 */
+        .form-top-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+        
+        .top-action-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .top-action-btn.start {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .top-action-btn.start:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .top-action-btn.save {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .top-action-btn.save:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        /* 添加底稿表单 */
+        .audit-form {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+        
+        .required-star {
+            color: var(--error);
+            margin-right: 5px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(44, 94, 146, 0.1);
+        }
+        
+        .form-control[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-col {
+            flex: 1;
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+            padding: 15px;
+        }
+        
+        /* 搜索按钮 */
+        .input-with-button {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-with-button .form-control {
+            flex: 1;
+        }
+        
+        .search-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 6px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        /* 详情按钮 */
+        .detail-btn {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--primary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .detail-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* 字数统计 */
+        .char-count {
+            position: absolute;
+            bottom: 8px;
+            left: 15px;
+            font-size: 0.85rem;
+            color: var(--gray);
+            background: rgba(255, 255, 255, 0.8);
+            padding: 3px 10px;
+            border-radius: 15px;
+        }
+        
+        /* 多选下拉框样式 - 阿里云DataV风格 */
+        .multi-select-container {
+            position: relative;
+            width: 100%;
+            z-index: 10;
+        }
+        
+        .select-header {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-height: 44px;
+        }
+        
+        .select-header:hover {
+            border-color: var(--primary);
+        }
+        
+        .select-header.focused {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(44, 94, 146, 0.2);
+        }
+        
+        .selected-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            flex: 1;
+        }
+        
+        .tag {
+            display: flex;
+            align-items: center;
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 13px;
+            color: var(--primary);
+        }
+        
+        .tag-remove {
+            margin-left: 6px;
+            cursor: pointer;
+            color: #8c8c8c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+        
+        .tag-remove:hover {
+            background: #ffccc7;
+            color: #f5222d;
+        }
+        
+        .placeholder {
+            color: #bfbfbf;
+            flex: 1;
+        }
+        
+        .select-arrow {
+            margin-left: 8px;
+            transition: transform 0.3s;
+        }
+        
+        .select-arrow.rotated {
+            transform: rotate(180deg);
+        }
+        
+        .dropdown-panel {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 6px;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .dropdown-panel.visible {
+            display: block;
+        }
+        
+        .search-container {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .search-container input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            outline: none;
+            font-size: 1rem;
+        }
+        
+        .search-container input:focus {
+            border-color: var(--primary);
+        }
+        
+        .options-container {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .option-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        
+        .option-item:hover {
+            background: #f0f7ff;
+        }
+        
+        .option-item.selected {
+            background: #e6f7ff;
+            color: var(--primary);
+        }
+        
+        .checkbox {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            border: 1px solid #d9d9d9;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .checkbox.checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .checkbox.checked::after {
+            content: "";
+            display: block;
+            width: 6px;
+            height: 10px;
+            border: 2px solid white;
+            border-top: none;
+            border-right: none;
+            transform: rotate(-45deg);
+            margin-top: -2px;
+        }
+        
+        .select-all {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            background: #fafafa;
+            font-weight: 500;
+        }
+        
+        .select-all:hover {
+            background: #f0f7ff;
+        }
+        
+        .dropdown-footer {
+            padding: 12px;
+            text-align: right;
+            border-top: 1px solid var(--border);
+            background: #f8f9fa;
+        }
+        
+        .dropdown-footer button {
+            padding: 8px 20px;
+            border: 1px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .dropdown-footer button:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* AI助理按钮 */
+        .ai-assistant {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(44, 94, 146, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(44, 94, 146, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(44, 94, 146, 0); }
+        }
+        
+        .ai-assistant:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            animation: none;
+        }
+        
+        .ai-assistant i {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .ai-assistant span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* AI助手弹窗 - 右侧滑入效果 */
+        .ai-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+        }
+        
+        .ai-modal.active {
+            display: block;
+        }
+        
+        .ai-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .ai-modal.active .ai-modal-overlay {
+            opacity: 1;
+        }
+        
+        .ai-modal-content {
+            position: absolute;
+            top: 0;
+            right: -450px;
+            width: 450px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            transition: right 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            z-index: 2001;
+        }
+        
+        .ai-modal.active .ai-modal-content {
+            right: 0;
+        }
+        
+        .ai-modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ai-modal-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            font-size: 1.2rem;
+        }
+        
+        .ai-modal-header .close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-modal-header .close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .ai-modal-body {
+            flex: 1;
+            background: #f5f7fb;
+            overflow: hidden;
+        }
+        
+        .ai-iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 700px;
+            border: none;
+        }
+        
+        /* 复制按钮 */
+        .copy-button-container {
+            padding: 15px;
+            text-align: center;
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+        
+        .copy-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .copy-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.05);
+        }
+        
+        .copy-btn::after {
+            content: "复制";
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        
+        .copy-btn:hover::after {
+            opacity: 1;
+        }
+        
+        /* 审计问题表格 */
+        .audit-issues {
+            margin-top: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+        
+        .audit-issues h4 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .audit-issues h4 i {
+            color: var(--accent);
+        }
+        
+        .issues-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .issues-table th,
+        .issues-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .issues-table th {
+            background-color: var(--audit-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .issues-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 5px;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .action-divider {
+            color: var(--border);
+            padding: 0 5px;
+        }
+        
+        /* 删除确认弹窗 */
+        .delete-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .delete-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .delete-modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            transform: translateY(-20px);
+            transition: transform 0.3s;
+        }
+        
+        .delete-modal.active .delete-modal-content {
+            transform: translateY(0);
+        }
+        
+        .delete-modal h3 {
+            color: var(--error);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .delete-modal p {
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .delete-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        
+        .delete-modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .delete-modal-btn.cancel {
+            background: #f8f9fa;
+            color: var(--dark);
+        }
+        
+        .delete-modal-btn.confirm {
+            background: var(--error);
+            color: white;
+        }
+        
+        .delete-modal-btn.cancel:hover {
+            background: #e9ecef;
+        }
+        
+        .delete-modal-btn.confirm:hover {
+            background: #c82333;
+        }
+        
+        /* 加载状态 */
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                padding: 10px 0;
+            }
+            
+            .logo {
+                padding: 10px 20px;
+            }
+            
+            .nav-links {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 10px;
+                gap: 5px;
+            }
+            
+            .nav-links li {
+                margin-bottom: 0;
+                flex-shrink: 0;
+            }
+            
+            .main-content {
+                padding: 15px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .ai-modal-content {
+                width: 90%;
+                max-width: 400px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .user-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .tabs-container {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+            
+            .tab {
+                padding: 12px 15px;
+                white-space: nowrap;
+            }
+            
+            .ai-modal-content {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .issues-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .ai-assistant {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .ai-assistant i {
+                font-size: 20px;
+            }
+            
+            .ai-assistant span {
+                font-size: 10px;
+            }
+            
+            .top-action-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* 错误提示 */
+        .error-message {
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .error-border {
+            border-color: var(--error) !important;
+        }
+        
+        /* 版本标记 */
+        .version-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            z-index: 1000;
+        }
+        
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 侧边导航 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-search-dollar"></i>
+                </div>
+                <div class="logo-text">智审先锋</div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#"><i class="fas fa-folder-open"></i> 我的项目</a></li>
+                <li><a href="#"><i class="fas fa-tasks"></i> 审计准备</a></li>
+                <li class="has-submenu active">
+                    <a href="#" class="active"><i class="fas fa-clipboard-list"></i> 审计实施</a>
+                    <ul class="submenu active">
+                        <li><a href="#"><i class="fas fa-user-friends"></i> 分工事项</a></li>
+                        <li><a href="#"><i class="fas fa-bullseye"></i> 审计关注点处理</a></li>
+                        <li><a href="#" class="active"><i class="fas fa-file-alt"></i> 审计底稿</a></li>
+                        <li><a href="#"><i class="fas fa-exclamation-circle"></i> 审计问题</a></li>
+                    </ul>
+                </li>
+                <li><a href="#"><i class="fas fa-flag-checkered"></i> 审计终结</a></li>
+                <li><a href="#"><i class="fas fa-calendar-alt"></i> 项目阶段时间维护</a></li>
+                <li><a href="#"><i class="fas fa-star"></i> 项目成员评价</a></li>
+                <li><a href="#"><i class="fas fa-file-contract"></i> 审计文书</a></li>
+                <li><a href="#"><i class="fas fa-book"></i> 项目台账</a></li>
+                <li><a href="#"><i class="fas fa-archive"></i> 项目归档</a></li>
+            </ul>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <div class="header">
+                <h2><i class="fas fa-file-contract"></i> 审计管理应用平台</h2>
+                <div class="user-actions">
+                    <button class="btn btn-outline"><i class="fas fa-bell"></i> 通知</button>
+                    <button class="btn btn-outline"><i class="fas fa-cog"></i> 设置</button>
+                    <button class="btn btn-primary"><i class="fas fa-user"></i> 王审计师</button>
+                </div>
+            </div>
+            
+            <!-- Tab导航 -->
+            <div class="tabs-container">
+                <div class="tab"><i class="fas fa-home"></i> 首页</div>
+                <div class="tab"><i class="fas fa-folder"></i> 我的项目</div>
+                <div class="tab"><i class="fas fa-file-alt"></i> 审计底稿</div>
+                <div class="tab active"><i class="fas fa-plus-circle"></i> 添加底稿</div>
+            </div>
+            
+            <!-- 添加底稿表单 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-plus"></i> 添加新审计底稿</h3>
+                </div>
+                
+                <div class="audit-form">
+                    <!-- 顶部按钮 -->
+                    <div class="form-top-actions">
+                        <button class="top-action-btn start" id="startBtn">
+                            <i class="fas fa-play-circle"></i> 启动
+                        </button>
+                        <button class="top-action-btn save" id="saveBtn">
+                            <i class="fas fa-save"></i> 保存
+                        </button>
+                    </div>
+                    
+                    <!-- 表单内容 -->
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>
+                                    <span class="required-star">*</span>底稿状态
+                                </label>
+                                <input type="text" class="form-control" value="草稿" readonly>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>
+                                    <span class="required-star">*</span>审计事项
+                                </label>
+                                <div class="input-with-button">
+                                    <input type="text" class="form-control" id="auditItem" value="应收账款">
+                                    <button class="search-btn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                                <button class="detail-btn">
+                                    <i class="fas fa-info-circle"></i> 点击查看详细信息
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>
+                                    <span class="required-star">*</span>底稿名称
+                                </label>
+                                <input type="text" class="form-control" id="draftName" value="应收账款审计底稿">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>底稿编码</label>
+                                <input type="text" class="form-control" id="draftCode" value="001" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>关联关注点</label>
+                                <input type="text" class="form-control" placeholder="请选择关注点">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>
+                                    <span class="required-star">*</span>被审计单位
+                                </label>
+                                <select class="form-control" id="auditedUnit">
+                                    <option value="" selected disabled>请选择</option>
+                                    <option>ABC科技有限公司</option>
+                                    <option>XYZ集团有限公司</option>
+                                    <option>创新实业有限公司</option>
+                                    <option>未来科技发展有限公司</option>
+                                    <option>环球制造股份有限公司</option>
+                                </select>
+                                <button class="detail-btn">
+                                    <i class="fas fa-info-circle"></i> 点击查看详细信息
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>取证人</label>
+                                <input type="text" class="form-control" value="王审计师" readonly>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>创建日期</label>
+                                <input type="date" class="form-control" id="createDate">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>修改日期</label>
+                                <input type="date" class="form-control" id="modifyDate">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>引用底稿</label>
+                                <select class="form-control">
+                                    <option value="" selected disabled>请选择</option>
+                                    <option>2023-001 应收账款底稿</option>
+                                    <option>2023-002 固定资产底稿</option>
+                                    <option>2023-003 应付账款底稿</option>
+                                    <option>2023-004 现金管理底稿</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>记录来源</label>
+                                <div class="multi-select-container" id="recordSourceContainer">
+                                    <div class="select-header" id="selectHeader">
+                                        <div class="selected-tags" id="selectedTags"></div>
+                                        <div class="placeholder" id="placeholder">请选择记录来源...</div>
+                                        <div class="select-arrow" id="selectArrow">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-panel" id="dropdownPanel">
+                                        <div class="select-all" id="selectAll">
+                                            <div class="checkbox" id="selectAllCheckbox"></div>
+                                            <span>全选</span>
+                                        </div>
+                                        <div class="search-container">
+                                            <input type="text" id="searchInput" placeholder="搜索记录来源...">
+                                        </div>
+                                        <div class="options-container" id="optionsContainer">
+                                            <!-- 选项将通过JS动态生成 -->
+                                        </div>
+                                        <div class="dropdown-footer">
+                                            <button id="confirmBtn">确定</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="text" class="form-control" value="天眼查" readonly style="margin-top: 10px;">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>
+                                    <span class="required-star">*</span>风险值模板
+                                </label>
+                                <select class="form-control" id="riskTemplate">
+                                    <option value="" selected disabled>请选择</option>
+                                    <option>客商综合分析</option>
+                                    <option>账龄分布综合分析</option>
+                                    <option>应收账款金额占比综合分析</option>
+                                    <option>周转率分析</option>
+                                    <option>坏账准备分析</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>审计过程记录</label>
+                        <textarea class="form-control" id="auditProcess" placeholder="请输入审计过程记录" maxlength="5000"></textarea>
+                        <div class="char-count" id="processCount">0/5000</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>审计结论</label>
+                        <textarea class="form-control" id="auditConclusion" placeholder="请输入审计结论" maxlength="5000"></textarea>
+                        <div class="char-count" id="conclusionCount">0/5000</div>
+                    </div>
+                    
+                    <!-- 审计问题表格模块 -->
+                    <div class="audit-issues">
+                        <h4><i class="fas fa-exclamation-circle"></i> 审计问题</h4>
+                        <div id="issuesTableLoading" class="loading-container" style="display: none;">
+                            <div class="loading-spinner"></div>
+                        </div>
+                        <table class="issues-table" id="issuesTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>问题编号</th>
+                                    <th>问题标题</th>
+                                    <th>问题点</th>
+                                    <th>涉及金额(万元)</th>
+                                    <th>涉及数量(个)</th>
+                                    <th>问题发现人</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="issuesTableBody">
+                                <!-- 表格内容将通过JS动态生成 -->
+                            </tbody>
+                        </table>
+                        <div id="issuesTablePlaceholder" style="text-align: center; padding: 30px; color: var(--gray);">
+                            <i class="fas fa-info-circle" style="font-size: 3rem; margin-bottom: 15px; color: var(--primary);"></i>
+                            <p>请点击AI助手弹窗中的"复制"按钮加载审计问题数据</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 页脚 -->
+            <footer>
+                <p>© 2023 审计管理应用平台 | 智审先锋 - 专业审计解决方案</p>
+            </footer>
+        </main>
+    </div>
+    
+    <!-- AI助理按钮 -->
+    <div class="ai-assistant">
+        <i class="fas fa-robot"></i>
+        <span>AI助理</span>
+    </div>
+    
+    <!-- AI助手弹窗 -->
+    <div class="ai-modal" id="aiModal">
+        <div class="ai-modal-overlay" id="modalOverlay"></div>
+        <div class="ai-modal-content">
+            <div class="ai-modal-header">
+                <h3><i class="fas fa-robot"></i> AI审计助手</h3>
+                <button class="close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="ai-modal-body">
+                <iframe
+                    src="http://121.43.233.12/chatbot/mpqT0yUa43BmDT3M"
+                    class="ai-iframe"
+                    frameborder="0"
+                    allow="microphone">
+                </iframe>
+            </div>
+            <div class="copy-button-container">
+                <button class="copy-btn" id="copyBtn">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 删除确认弹窗 -->
+    <div class="delete-modal" id="deleteModal">
+        <div class="delete-modal-content">
+            <h3><i class="fas fa-exclamation-triangle"></i> 确认删除</h3>
+            <p>您确定要删除此审计问题吗？删除后将无法恢复，请谨慎操作。</p>
+            <div class="delete-modal-actions">
+                <button class="delete-modal-btn cancel" id="cancelDelete">取消</button>
+                <button class="delete-modal-btn confirm" id="confirmDelete">确认删除</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 版本标记 -->
+    <div class="version-badge">版本 1.2</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化日期
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('createDate').value = formattedDate;
+            document.getElementById('modifyDate').value = formattedDate;
+            
+            // 字数统计
+            const auditProcess = document.getElementById('auditProcess');
+            const auditConclusion = document.getElementById('auditConclusion');
+            const processCount = document.getElementById('processCount');
+            const conclusionCount = document.getElementById('conclusionCount');
+            
+            function updateCharCount() {
+                processCount.textContent = `${auditProcess.value.length}/5000`;
+                conclusionCount.textContent = `${auditConclusion.value.length}/5000`;
+            }
+            
+            auditProcess.addEventListener('input', updateCharCount);
+            auditConclusion.addEventListener('input', updateCharCount);
+            updateCharCount();
+            
+            // 保存按钮点击事件
+            const saveBtn = document.getElementById('saveBtn');
+            const draftCode = document.getElementById('draftCode');
+            
+            saveBtn.addEventListener('click', function() {
+                // 模拟保存操作
+                const currentCode = parseInt(draftCode.value);
+                draftCode.value = (currentCode + 1).toString().padStart(3, '0');
+                
+                // 刷新页面
+                window.location.reload();
+            });
+            
+            // 启动按钮点击事件 - 非空校验
+            const startBtn = document.getElementById('startBtn');
+            const requiredFields = [
+                { id: 'auditItem', name: '审计事项' },
+                { id: 'draftName', name: '底稿名称' },
+                { id: 'auditedUnit', name: '被审计单位' },
+                { id: 'riskTemplate', name: '风险值模板' }
+            ];
+            
+            startBtn.addEventListener('click', function() {
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    const element = document.getElementById(field.id);
+                    const errorElement = document.createElement('div');
+                    errorElement.className = 'error-message';
+                    errorElement.textContent = `${field.name}不能为空`;
+                    
+                    // 移除之前的错误信息
+                    const existingError = element.nextElementSibling;
+                    if (existingError && existingError.classList.contains('error-message')) {
+                        existingError.remove();
+                    }
+                    
+                    if (element.value === '' || (element.tagName === 'SELECT' && element.value === null)) {
+                        isValid = false;
+                        element.classList.add('error-border');
+                        element.after(errorElement);
+                        errorElement.style.display = 'block';
+                    } else {
+                        element.classList.remove('error-border');
+                    }
+                });
+                
+                if (isValid) {
+                    alert('表单验证通过，启动成功！');
+                } else {
+                    alert('请填写所有必填字段！');
+                }
+            });
+            
+            // 审计事项搜索按钮
+            const searchBtns = document.querySelectorAll('.search-btn');
+            searchBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    alert('搜索功能已触发！');
+                });
+            });
+            
+            // 详情按钮
+            const detailBtns = document.querySelectorAll('.detail-btn');
+            detailBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    alert('正在加载详细信息...');
+                });
+            });
+            
+            // 记录来源多选下拉框功能
+            const recordSourceOptions = [
+                "账簿", 
+                "报表", 
+                "被审计提供材料", 
+                "银行对账单", 
+                "合同文件", 
+                "税务申报表", 
+                "财务系统导出", 
+                "发票", 
+                "会议纪要", 
+                "电子邮件", 
+                "其他"
+            ];
+            
+            const selectHeader = document.getElementById('selectHeader');
+            const selectedTags = document.getElementById('selectedTags');
+            const placeholder = document.getElementById('placeholder');
+            const selectArrow = document.getElementById('selectArrow');
+            const dropdownPanel = document.getElementById('dropdownPanel');
+            const searchInput = document.getElementById('searchInput');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const selectAll = document.getElementById('selectAll');
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            const confirmBtn = document.getElementById('confirmBtn');
+            
+            let selectedValues = [];
+            
+            // 初始化选项
+            function initOptions() {
+                optionsContainer.innerHTML = '';
+                recordSourceOptions.forEach(option => {
+                    const optionItem = document.createElement('div');
+                    optionItem.className = 'option-item';
+                    optionItem.dataset.value = option;
+                    
+                    const checkbox = document.createElement('div');
+                    checkbox.className = 'checkbox';
+                    
+                    const label = document.createElement('span');
+                    label.textContent = option;
+                    
+                    optionItem.appendChild(checkbox);
+                    optionItem.appendChild(label);
+                    
+                    optionItem.addEventListener('click', function() {
+                        toggleOption(option);
+                    });
+                    
+                    optionsContainer.appendChild(optionItem);
+                });
+            }
+            
+            // 切换选项
+            function toggleOption(value) {
+                const index = selectedValues.indexOf(value);
+                if (index === -1) {
+                    selectedValues.push(value);
+                } else {
+                    selectedValues.splice(index, 1);
+                }
+                
+                updateOptionDisplay();
+                renderSelectedTags();
+                updateSelectAllState();
+            }
+            
+            // 更新选项显示状态
+            function updateOptionDisplay() {
+                document.querySelectorAll('.option-item').forEach(item => {
+                    const value = item.dataset.value;
+                    const checkbox = item.querySelector('.checkbox');
+                    
+                    if (selectedValues.includes(value)) {
+                        checkbox.classList.add('checked');
+                        item.classList.add('selected');
+                    } else {
+                        checkbox.classList.remove('checked');
+                        item.classList.remove('selected');
+                    }
+                });
+            }
+            
+            // 渲染选中的标签
+            function renderSelectedTags() {
+                selectedTags.innerHTML = '';
+                
+                if (selectedValues.length === 0) {
+                    placeholder.style.display = 'block';
+                    return;
+                }
+                
+                placeholder.style.display = 'none';
+                
+                selectedValues.forEach(value => {
+                    const tag = document.createElement('div');
+                    tag.className = 'tag';
+                    tag.innerHTML = `
+                        ${value}
+                        <div class="tag-remove" data-value="${value}">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    `;
+                    selectedTags.appendChild(tag);
+                });
+                
+                // 添加删除事件
+                document.querySelectorAll('.tag-remove').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const value = this.getAttribute('data-value');
+                        const index = selectedValues.indexOf(value);
+                        if (index !== -1) {
+                            selectedValues.splice(index, 1);
+                            renderSelectedTags();
+                            updateOptionDisplay();
+                            updateSelectAllState();
+                        }
+                    });
+                });
+            }
+            
+            // 更新全选状态
+            function updateSelectAllState() {
+                if (selectedValues.length === recordSourceOptions.length) {
+                    selectAllCheckbox.classList.add('checked');
+                } else {
+                    selectAllCheckbox.classList.remove('checked');
+                }
+            }
+            
+            // 全选/取消全选
+            selectAll.addEventListener('click', function() {
+                if (selectedValues.length === recordSourceOptions.length) {
+                    selectedValues = [];
+                } else {
+                    selectedValues = [...recordSourceOptions];
+                }
+                
+                renderSelectedTags();
+                updateOptionDisplay();
+                updateSelectAllState();
+            });
+            
+            // 搜索功能
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                document.querySelectorAll('.option-item').forEach(item => {
+                    const text = item.dataset.value.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+            
+            // 打开/关闭下拉面板
+            selectHeader.addEventListener('click', function() {
+                dropdownPanel.classList.toggle('visible');
+                selectHeader.classList.toggle('focused');
+                selectArrow.classList.toggle('rotated');
+                
+                if (dropdownPanel.classList.contains('visible')) {
+                    searchInput.focus();
+                }
+            });
+            
+            // 点击其他地方关闭下拉面板
+            document.addEventListener('click', function(e) {
+                if (!recordSourceContainer.contains(e.target)) {
+                    dropdownPanel.classList.remove('visible');
+                    selectHeader.classList.remove('focused');
+                    selectArrow.classList.remove('rotated');
+                }
+            });
+            
+            // 确认按钮
+            confirmBtn.addEventListener('click', function() {
+                dropdownPanel.classList.remove('visible');
+                selectHeader.classList.remove('focused');
+                selectArrow.classList.remove('rotated');
+            });
+            
+            // 初始化
+            initOptions();
+            renderSelectedTags();
+            
+            // AI助理弹窗控制
+            const aiButton = document.querySelector('.ai-assistant');
+            const aiModal = document.getElementById('aiModal');
+            const closeModal = document.getElementById('closeModal');
+            const modalOverlay = document.getElementById('modalOverlay');
+            
+            aiButton.addEventListener('click', function() {
+                aiModal.classList.add('active');
+            });
+            
+            closeModal.addEventListener('click', function() {
+                aiModal.classList.remove('active');
+            });
+            
+            modalOverlay.addEventListener('click', function() {
+                aiModal.classList.remove('active');
+            });
+            
+            // 按ESC键关闭弹窗
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "Escape" && aiModal.classList.contains('active')) {
+                    aiModal.classList.remove('active');
+                }
+            });
+            
+            // 审计问题表格数据
+            const issuesTableBody = document.getElementById('issuesTableBody');
+            const issuesTable = document.getElementById('issuesTable');
+            const issuesTablePlaceholder = document.getElementById('issuesTablePlaceholder');
+            const issuesTableLoading = document.getElementById('issuesTableLoading');
+            
+            // 渲染审计问题表格
+            function renderIssuesTable(issues) {
+                issuesTableBody.innerHTML = '';
+                
+                issues.forEach(issue => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${issue.q_no}</td>
+                        <td>${issue.q_title}</td>
+                        <td>${issue.q_point}</td>
+                        <td>${issue.amount.toLocaleString('zh-CN')}</td>
+                        <td>${issue.q_num}</td>
+                        <td>${issue.q_finder}</td>
+                        <td class="actions">
+                            <button class="action-btn edit-btn" data-id="${issue.q_no}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <span class="action-divider">|</span>
+                            <button class="action-btn delete-btn" data-id="${issue.q_no}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    issuesTableBody.appendChild(row);
+                });
+                
+                // 绑定编辑按钮事件
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const issueId = this.getAttribute('data-id');
+                        alert(`进入编辑问题页面：${issueId}`);
+                    });
+                });
+                
+                // 绑定删除按钮事件
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const issueId = this.getAttribute('data-id');
+                        openDeleteModal(issueId);
+                    });
+                });
+                
+                // 显示表格，隐藏占位符和加载状态
+                issuesTable.style.display = 'table';
+                issuesTablePlaceholder.style.display = 'none';
+                issuesTableLoading.style.display = 'none';
+            }
+            
+            // 打开删除确认弹窗
+            function openDeleteModal(issueId) {
+                const deleteModal = document.getElementById('deleteModal');
+                const cancelDelete = document.getElementById('cancelDelete');
+                const confirmDelete = document.getElementById('confirmDelete');
+                
+                // 设置删除确认按钮的回调
+                confirmDelete.onclick = function() {
+                    // 模拟删除操作
+                    alert(`已删除问题: ${issueId}`);
+                    deleteModal.classList.remove('active');
+                    
+                    // 在实际应用中，这里会调用API删除数据
+                };
+                
+                // 取消删除按钮
+                cancelDelete.onclick = function() {
+                    deleteModal.classList.remove('active');
+                };
+                
+                deleteModal.classList.add('active');
+            }
+            
+            // 显示通知
+            function showNotification(message, isError = false) {
+                const notification = document.createElement('div');
+                notification.textContent = message;
+                notification.style.position = 'fixed';
+                notification.style.bottom = '20px';
+                notification.style.right = '20px';
+                notification.style.backgroundColor = isError ? 'var(--error)' : 'var(--primary)';
+                notification.style.color = 'white';
+                notification.style.padding = '10px 20px';
+                notification.style.borderRadius = '5px';
+                notification.style.zIndex = '3000';
+                notification.style.boxShadow = '0 3px 10px rgba(0,0,0,0.2)';
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+            
+            // 从API获取审计问题数据
+            function fetchIssuesData() {
+                // 显示加载状态
+                issuesTablePlaceholder.style.display = 'none';
+                issuesTable.style.display = 'none';
+                issuesTableLoading.style.display = 'flex';
+                
+                // 调用API
+                fetch('http://0.0.0.0:31082/ap_data')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('网络响应错误');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // 渲染表格
+                        renderIssuesTable(data.data);
+                        showNotification('审计问题数据已加载');
+                    })
+                    .catch(error => {
+                        console.error('获取审计问题数据失败:', error);
+                        issuesTableLoading.style.display = 'none';
+                        issuesTablePlaceholder.innerHTML = `
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px; color: var(--error);"></i>
+                            <p>数据加载失败，请稍后再试</p>
+                            <button class="btn btn-outline" style="margin-top: 15px;" id="retryBtn">重试</button>
+                        `;
+                        issuesTablePlaceholder.style.display = 'block';
+                        
+                        // 绑定重试按钮
+                        document.getElementById('retryBtn').addEventListener('click', fetchIssuesData);
+                        
+                        showNotification('加载审计问题数据失败', true);
+                    });
+            }
+            
+            // 复制按钮事件 - 触发API请求
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.addEventListener('click', function() {
+                // 触发API请求
+                fetchIssuesData();
+                
+                // 关闭AI助手弹窗
+                aiModal.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
