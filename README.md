@@ -74,13 +74,14 @@ python run.py
 
 ### 2. 按客商名称查询
 
-**URL**: `GET /api/audit/query/by_customer?customer_name=客商名称`
+**URL**: `GET /api/audit/query/by_customer?company_name=企业名称`
 
 **成功响应**:
 
 ```json
 [
     {
+        "audit_id": "审计ID",
         "process": "审计过程描述",
         "conclusion": "审计结论总结",
         "customer": [
@@ -107,24 +108,17 @@ python run.py
 
 ```json
 {
-    "audit_id": 1,
-    "process": "审计过程描述",
-    "conclusion": "审计结论总结",
-    "customers": [
+    "customer_name": "客商A",
+    "title": "高风险问题",
+    "level": "high",
+    "desc": "问题详细描述",
+    "suggest": "改进建议",
+    "attach": [
         {
-            "customer_name": "客商A",
-            "title": "高风险问题",
-            "level": "high",
-            "desc": "问题详细描述",
-            "suggest": "改进建议",
-            "attach": [
-                {
-                    "name": "审计报告.pdf",
-                    "url": "https://example.com/files/report.pdf",
-                    "filesize": 1024,
-                    "dateTime": "2023-07-15T10:30:00"
-                }
-            ]
+            "name": "审计报告.pdf",
+            "url": "https://example.com/files/report.pdf",
+            "filesize": 1024,
+            "dateTime": "2023-07-15T10:30:00"
         }
     ]
 }
