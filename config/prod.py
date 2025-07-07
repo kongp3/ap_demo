@@ -10,7 +10,7 @@ app_port = 31082
 WEB_HOST = 'http://0.0.0.0:31082/'
 
 
-MYSQL_HOST = '121.43.233.12'
+MYSQL_HOST = '121.43.233.12:3408'
 MYSQL_PASS = '1qaz%40WSX'
 MYSQL_USER = 'root'
 
