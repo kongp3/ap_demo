@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.service.audit_service import save_audit_data, get_audit_by_company_name, get_customer_detail_by_audit_id
+from app.service.audit_service import save_audit_data, get_audit, get_audit_by_company_name, get_customer_detail, get_customer_detail_by_audit_id
 from app.util.database import get_db
 
 audit_bp = Blueprint('audit', __name__, url_prefix='/api/audit')
@@ -34,7 +34,7 @@ def save_audit():
 
 
 @audit_bp.route('/query/by_company', methods=['GET'])
-def query_by_customer():
+def query_by_company():
     """
     根据客商名称查询审计结果
     """
@@ -49,6 +49,21 @@ def query_by_customer():
             return jsonify({"message": "No audit results found for the given company name"}), 404
 
         return jsonify(results), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@audit_bp.route('/query', methods=['GET'])
+def query():
+    """
+    查询审计结果
+    """
+    db = next(get_db())
+    try:
+        result = get_audit(db)
+        if not result:
+            return {}, 200
+
+        return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -72,6 +87,30 @@ def query_by_audit_id():
         result = get_customer_detail_by_audit_id(db, audit_id)
         if not result:
             return jsonify({"message": f"No audit details found for audit_id: {audit_id}"}), 404
+
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@audit_bp.route('/query/by_detail_id', methods=['GET'])
+def query_by_detail_id():
+    """
+    根据审计详情ID查询客商详情
+    """
+    detail_id = request.args.get('detail_id')
+    if not detail_id:
+        return jsonify({"error": "Missing required parameter: detail_id"}), 400
+
+    try:
+        detail_id = int(detail_id)
+    except ValueError:
+        return jsonify({"error": "Invalid detail_id format. Must be an integer"}), 400
+
+    db = next(get_db())
+    try:
+        result = get_customer_detail(db, detail_id)
+        if not result:
+            return jsonify({"message": f"No audit details found for detail_id: {detail_id}"}), 404
 
         return jsonify(result), 200
     except Exception as e:

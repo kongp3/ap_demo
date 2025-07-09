@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from app.controller.audit_controller import audit_bp
 from app.controller.main_controller import main_bp
+from app.controller.draft_controller import draft_bp
 from app.util.database import engine, Base
 from config import Config
 
@@ -19,5 +20,6 @@ def create_app():
     # 注册蓝图
     app.register_blueprint(main_bp)
     app.register_blueprint(audit_bp)
+    app.register_blueprint(draft_bp)
 
     return app
