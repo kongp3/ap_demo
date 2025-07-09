@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 from app.model.audit_model import AuditResult, AuditResultDetail, AuditResultAttach
 from sqlalchemy.orm import Session
@@ -6,6 +7,7 @@ from sqlalchemy.orm import Session
 def save_audit_data(db: Session, audit_data: dict):
     # 创建主审计记录
     audit = AuditResult(
+        company_name=audit_data['company_name'],
         process=audit_data["process"],
         conclusion=audit_data["conclusion"]
     )
@@ -13,7 +15,7 @@ def save_audit_data(db: Session, audit_data: dict):
     db.flush()  # 获取生成的ID但不提交事务
 
     # 创建客商详情记录
-    for customer in audit_data["customer"]:
+    for customer in audit_data["customers"]:
         detail = AuditResultDetail(
             audit_id=audit.id,
             customer_name=customer["customer_name"],
@@ -24,6 +26,16 @@ def save_audit_data(db: Session, audit_data: dict):
             date_time=datetime.now()
         )
         db.add(detail)
+        db.flush()  # 获取生成的ID但不提交事务
+
+        attach = AuditResultAttach(
+            detail_id=detail.id,
+            name= "对" +detail.customer_name + "的审计建议",
+            url=customer["attach_url"],
+            filesize= 1024,
+            date_time=datetime.now()
+        )
+        db.add(attach)
 
     db.commit()
     return audit.id
@@ -63,6 +75,7 @@ def get_audit_by_company_name(db: Session, company_name: str):
             })
 
         results.append({
+            "audit_id": audit.id,
             "process": audit.process,
             "conclusion": audit.conclusion,
             "customer": customers

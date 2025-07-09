@@ -10,13 +10,13 @@ def save_audit():
     data = request.get_json()
 
     # 验证必要字段
-    required_fields = ["process", "conclusion", "customer"]
+    required_fields = ["company_name", "process", "conclusion", "customers"]
     for field in required_fields:
         if field not in data:
             return jsonify({"error": f"Missing required field: {field}"}), 400
 
     # 验证客商数据
-    for i, customer in enumerate(data["customer"]):
+    for i, customer in enumerate(data["customers"]):
         if "customer_name" not in customer or not customer["customer_name"]:
             return jsonify({"error": f"Missing customer_name in customer index {i}"}), 400
 
