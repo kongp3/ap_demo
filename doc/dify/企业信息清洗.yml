@@ -1,0 +1,297 @@
+app:
+  description: 对以PDF格式的企业信息进行清洗，保证检索的全面性
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: workflow
+  name: 企业信息清洗
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/siliconflow:0.0.15@775950e2071600bd3ba0415ec306c1b1582bc4a2a94688d642f627d112d87cd3
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: bowenliang123/md_exporter:1.8.0@aa15ca94651e608fa2defef440cc5bbd22884053168bd2d41d132d5d1b021129
+kind: app
+version: 0.3.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: 1751438464328-source-1751526281951-target
+      source: '1751438464328'
+      sourceHandle: source
+      target: '1751526281951'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: tool
+      id: 1751526281951-source-1751528075537-target
+      source: '1751526281951'
+      sourceHandle: source
+      target: '1751528075537'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: end
+      id: 1751528075537-source-1751527221083-target
+      source: '1751528075537'
+      sourceHandle: source
+      target: '1751527221083'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - allowed_file_extensions: []
+          allowed_file_types:
+          - document
+          allowed_file_upload_methods:
+          - local_file
+          - remote_url
+          label: 文件
+          max_length: 48
+          options: []
+          required: true
+          type: file
+          variable: file
+      height: 90
+      id: '1751438464328'
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1751438464328'
+          - file
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        prompt_template:
+        - id: a73b2299-5499-47ea-82b7-161b995d3746
+          role: system
+          text: "请将上传的文件{{#1751438464328.file#}}按以下要求提取并结构化输出为Markdown格式：\n\n1. 基本信息（一级标题）\n\
+            \   - 读取文件中【1.1基本信息】的所有内容\n   - 必含字段：企业名称、英文名称、曾用名、工商注册号、统一信用代码、法定代表人、组织机构代码、注册资本、实缴资本、所属行业、企业类型、经营状态、成立日期、核准日期、营业期限、登记机关、人员规模、参保人数、经营范围、公司简介、公司标签\n\
+            \   - 格式要求：\n     ```\n     | 字段 | 内容 |\n     |---|---|\n     | 企业名称 |\
+            \ 沈阳城市公用集团煤炭有限公司 |\n     ```\n\n2. 变更记录（一级标题）\n   - 读取文件中【1.3变更记录】的所有内容，逐行扫描记录，直至【1.4\
+            \ 主要人员】标题为止。\n   - 表头：变更项目 | 变更前内容 | 变更后内容 | 变更日期\n   - 示例：\n     ```\n\
+            \     | 投资人变更 | 沈阳城市公用集团有限公司 | 沈阳盛京能源发展集团有限公司 | 2020-04-21 |\n     ```\n\
+            \n3. 被执行信息（一级标题）\n3.1. 失信信息（二级标题）\n    - 读取文件中所有【失信信息】标题下内容，不同年度下都会有【失信信息】内容\n\
+            \    -  表头：立案时间｜案号｜履行状态｜执行法院｜作出执行依据单位｜立案时间\n   - 示例：\n     ```\n     |\
+            \ 2020-11-10｜(2020)辽0104执3605号｜全部未履行｜沈阳市大东区人民法院｜沈阳市大东区人民法院｜2020-11-10|\n\
+            \     ```\n3.2. 被执行信息（二级标题）\n    - 读取文件中所有【被执行信息】标题下内容，不同年度下都会有【被执行信息】内容\n\
+            \    -  表头：立案时间｜执行标的｜案号｜执行法院\n   - 示例：\n     ```\n     | 2020-09-17｜22973544.0｜(2020)辽01执1468号｜辽宁省沈阳市中级人民法院|\n\
+            \     ```\n\nMarkdown格式规范：\n   - 使用Markdown语法：`# 一级标题`，`## 二级标题`\n   -\
+            \ 表格列宽自适应，不保留PDF原始表格线\n   - 一级标题内容间使用###分隔\n\n{{#context#}}"
+        selected: true
+        title: 文件 -> Markdown
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1751526281951'
+      position:
+        x: 420.6570191039085
+        y: 282
+      positionAbsolute:
+        x: 420.6570191039085
+        y: 282
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1751528075537'
+          - files
+          variable: files
+        - value_selector:
+          - '1751526281951'
+          - text
+          variable: text
+        selected: false
+        title: 结束
+        type: end
+      height: 116
+      id: '1751527221083'
+      position:
+        x: 1120.680173254528
+        y: 282
+      positionAbsolute:
+        x: 1120.680173254528
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Markdown text
+            ja_JP: Markdown text
+            pt_BR: Markdown text
+            zh_Hans: Markdown格式文本
+          label:
+            en_US: Markdown text
+            ja_JP: Markdown text
+            pt_BR: Markdown text
+            zh_Hans: Markdown格式文本
+          llm_description: ''
+          max: null
+          min: null
+          name: md_text
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Filename of the output file
+            ja_JP: Filename of the output file
+            pt_BR: Filename of the output file
+            zh_Hans: 输出文件名
+          label:
+            en_US: Filename of the output file
+            ja_JP: Filename of the output file
+            pt_BR: Filename of the output file
+            zh_Hans: 输出文件名
+          llm_description: ''
+          max: null
+          min: null
+          name: output_filename
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          md_text: ''
+          output_filename: ''
+        provider_id: bowenliang123/md_exporter/md_exporter
+        provider_name: bowenliang123/md_exporter/md_exporter
+        provider_type: builtin
+        selected: false
+        title: Markdown 转 DOCX 文件
+        tool_configurations: {}
+        tool_description: 将 Markdown 转换为 DOCX 文件的工具
+        tool_label: Markdown 转 DOCX 文件
+        tool_name: md_to_docx
+        tool_parameters:
+          md_text:
+            type: mixed
+            value: '{{#1751526281951.text#}}'
+          output_filename:
+            type: mixed
+            value: 测试
+        type: tool
+      height: 54
+      id: '1751528075537'
+      position:
+        x: 780.8933910848426
+        y: 282
+      positionAbsolute:
+        x: 780.8933910848426
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 91.1443723789115
+      y: 167.4688687513967
+      zoom: 0.686736345176422

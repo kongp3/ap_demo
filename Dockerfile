@@ -20,6 +20,9 @@ COPY . .
 # 安装 Python 依赖
 RUN pip install --no-cache-dir -r requirements.txt
 
+# 安装 gunicorn（解决 "gunicorn not found" 错误）
+RUN pip install --no-cache-dir gunicorn==20.1.0
+
 # 创建静态文件目录并设置权限
 RUN mkdir -p /app/app/static && \
     chmod -R 755 /app/app/static
@@ -27,5 +30,5 @@ RUN mkdir -p /app/app/static && \
 # 暴露端口
 EXPOSE 5000
 
-# 设置启动命令
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "run:app", "--workers", "4", "--timeout", "120"]
+# 设置启动命令 - 使用绝对路径确保 gunicorn 可执行
+CMD ["/usr/local/bin/gunicorn", "--bind", "0.0.0.0:5000", "run:app", "--workers", "4", "--timeout", "120"]

@@ -1,0 +1,3740 @@
+app:
+  description: AI赋能财务审计，达到提质提效的目的
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 智审先锋
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/siliconflow:0.0.15@775950e2071600bd3ba0415ec306c1b1582bc4a2a94688d642f627d112d87cd3
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: jaguarliuu/rookie_text2data:0.3.0@59a0ef957f535edcc661369a3edc3894ce4cd8b8063b296b699ff55c5f6d262d
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: aias00/minio:0.0.3@fca0552e7b28a2ddba431e1becf5d0d47ceeca577d238657db07dd9147817b59
+kind: app
+version: 0.3.0
+workflow:
+  conversation_variables:
+  - description: 最近补充提示的分支
+    id: 15dd26c2-b0a3-46b6-aece-a31d0bdd113d
+    name: latest_branch
+    selector:
+    - conversation
+    - latest_branch
+    value: 0
+    value_type: number
+  - description: 用户上传文档解析内容
+    id: 60f0ac72-fea1-4238-9016-1f4ee00e703c
+    name: file_content
+    selector:
+    - conversation
+    - file_content
+    value: []
+    value_type: array[string]
+  - description: 下一步审计重点
+    id: 9132e1f3-846b-4e55-8642-c1246737f116
+    name: next_plan
+    selector:
+    - conversation
+    - next_plan
+    value: ''
+    value_type: string
+  - description: 审计结论
+    id: f94c380b-e71a-4ce1-b28d-8e98db957cd9
+    name: conclusion
+    selector:
+    - conversation
+    - conclusion
+    value: ''
+    value_type: string
+  - description: 审计过程
+    id: cc116b30-44c7-4ddd-ad7c-600a503d7bc6
+    name: process
+    selector:
+    - conversation
+    - process
+    value: ''
+    value_type: string
+  - description: 客商审计建议(customer_name:客商名称；title：风险标题；desc：风险描述；suggest：审计建议；level：风险评级)
+    id: 29560662-0f0f-4fba-b1d4-06345e6b76fb
+    name: customers
+    selector:
+    - conversation
+    - customers
+    value:
+    - customer_name: null
+      desc: null
+      level: null
+      suggest: null
+      title: null
+    value_type: array[object]
+  - description: 企业名称
+    id: b54435bf-b475-4189-9e7d-ff637615ae86
+    name: company_name
+    selector:
+    - conversation
+    - company_name
+    value: ''
+    value_type: string
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - document
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      enabled: true
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: '您好！我是您的专属审计专家智能体。我专注于审计实务与风险洞察，特别擅长运用专业知识和数据分析技术，帮助您高效应对审计挑战、识别潜在风险。
+
+
+      我能为您做什么？
+
+
+      📊 智能问答： 快速解答外部法规、客户风险、内部制度等审计相关问题。
+
+      💡 核心能力 - 应收账款回收风险分析： 深度分析您的应收账款数据（如账龄、客户集中度、周转率、历史坏账率等），精准识别回款风险点，评估坏账准备充足性，并提供数据驱动的预警与优化建议，守护您的资金链健康。
+
+
+      告诉我您的需求，让我们开始吧！'
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions:
+    - 帮我生成一份应收账款回收的审计底稿
+    - 对企业应收账款回收风险审计的建议
+    - 最新的《企业会计准则第XX号》对收入确认有什么关键修订？
+    - 我们公司针对关联方交易的审批流程是如何规定的？
+    suggested_questions_after_answer:
+      enabled: true
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: question-classifier
+      id: 1750663670720-source-1750663690075-target
+      selected: false
+      source: '1750663670720'
+      sourceHandle: source
+      target: '1750663690075'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: if-else
+      id: 1751254331894-source-1751595003695-target
+      selected: false
+      source: '1751254331894'
+      sourceHandle: source
+      target: '1751595003695'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1751690688100'
+        sourceType: iteration-start
+        targetType: tool
+      id: 1751690688100start-source-1751690717445-target
+      selected: false
+      source: 1751690688100start
+      sourceHandle: source
+      target: '1751690717445'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: iteration
+      id: 1751688648757-source-1751690688100-target
+      selected: false
+      source: '1751688648757'
+      sourceHandle: source
+      target: '1751690688100'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: tool
+      id: 1751597997390-source-17516885020400-target
+      selected: false
+      source: '1751597997390'
+      sourceHandle: source
+      target: '17516885020400'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: tool
+      id: 1751597243049-source-1751695527564-target
+      selected: false
+      source: '1751597243049'
+      sourceHandle: source
+      target: '1751695527564'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: answer
+      id: 17516957148560-source-1751264495502-target
+      selected: false
+      source: '17516957148560'
+      sourceHandle: source
+      target: '1751264495502'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: parameter-extractor
+        targetType: assigner
+      id: 1751700084293-source-1751688125434-target
+      selected: false
+      source: '1751700084293'
+      sourceHandle: source
+      target: '1751688125434'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: llm
+      id: 1751695527564-source-1751254177443-target
+      selected: false
+      source: '1751695527564'
+      sourceHandle: source
+      target: '1751254177443'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: parameter-extractor
+      id: 1751254177443-source-1751700084293-target
+      selected: false
+      source: '1751254177443'
+      sourceHandle: source
+      target: '1751700084293'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: answer
+      id: 1751877267908-source-1751688246531-target
+      selected: false
+      source: '1751877267908'
+      sourceHandle: source
+      target: '1751688246531'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: template-transform
+        targetType: llm
+      id: 1751960169028-source-1751960810736-target
+      selected: false
+      source: '1751960169028'
+      sourceHandle: source
+      target: '1751960810736'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 1751960810736-source-1750663876620-target
+      selected: false
+      source: '1751960810736'
+      sourceHandle: source
+      target: '1750663876620'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: http-request
+      id: 1751963295296-source-1751877267908-target
+      selected: false
+      source: '1751963295296'
+      sourceHandle: source
+      target: '1751877267908'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1751968948567'
+        sourceType: iteration-start
+        targetType: llm
+      id: 1751968948567start-source-1751969003732-target
+      selected: false
+      source: 1751968948567start
+      sourceHandle: source
+      target: '1751969003732'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInLoop: false
+        sourceType: iteration
+        targetType: code
+      id: 1751968948567-source-1751963295296-target
+      selected: false
+      source: '1751968948567'
+      sourceHandle: source
+      target: '1751963295296'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1751968948567'
+        sourceType: llm
+        targetType: parameter-extractor
+      id: 1751969003732-source-1751970346265-target
+      selected: false
+      source: '1751969003732'
+      sourceHandle: source
+      target: '1751970346265'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1751968948567'
+        sourceType: parameter-extractor
+        targetType: tool
+      id: 1751970346265-source-1751969013331-target
+      selected: false
+      source: '1751970346265'
+      sourceHandle: source
+      target: '1751969013331'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1751968948567'
+        sourceType: tool
+        targetType: code
+      id: 1751969013331-source-1751970563348-target
+      selected: false
+      source: '1751969013331'
+      sourceHandle: source
+      target: '1751970563348'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: tool
+      id: 1750663690075-1752031137902-17516957148560-target
+      selected: false
+      source: '1750663690075'
+      sourceHandle: '1752031137902'
+      target: '17516957148560'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: if-else
+      id: 17520312488070-source-1752031262049-target
+      selected: false
+      source: '17520312488070'
+      sourceHandle: source
+      target: '1752031262049'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: http-request
+        targetType: answer
+      id: 17520381090080-source-1752038164718-target
+      selected: false
+      source: '17520381090080'
+      sourceHandle: source
+      target: '1752038164718'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: if-else
+      id: 1750663690075-1-1752042238962-target
+      selected: false
+      source: '1750663690075'
+      sourceHandle: '1'
+      target: '1752042238962'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: 1752042974618-source-1751597243049-target
+      selected: false
+      source: '1752042974618'
+      sourceHandle: source
+      target: '1751597243049'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: tool
+      id: 1752042974618-source-1751597997390-target
+      selected: false
+      source: '1752042974618'
+      sourceHandle: source
+      target: '1751597997390'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: assigner
+        targetType: code
+      id: 17520429980490-source-1752042974618-target
+      selected: false
+      source: '17520429980490'
+      sourceHandle: source
+      target: '1752042974618'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 17521117569930-false-17520312488070-target
+      selected: false
+      source: '17521117569930'
+      sourceHandle: 'false'
+      target: '17520312488070'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: if-else
+      id: 1750663690075-1751687502297-17521117569930-target
+      selected: false
+      source: '1750663690075'
+      sourceHandle: '1751687502297'
+      target: '17521117569930'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: assigner
+      id: 1752031262049-true-1752041520432-target
+      selected: false
+      source: '1752031262049'
+      sourceHandle: 'true'
+      target: '1752041520432'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 17521117569930-true-17520381090080-target
+      selected: false
+      source: '17521117569930'
+      sourceHandle: 'true'
+      target: '17520381090080'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: assigner
+        targetType: http-request
+      id: 1752041520432-source-17520381090080-target
+      selected: false
+      source: '1752041520432'
+      sourceHandle: source
+      target: '17520381090080'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1752042238962-true-1751254331894-target
+      selected: false
+      source: '1752042238962'
+      sourceHandle: 'true'
+      target: '1751254331894'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: code
+      id: 1752042238962-false-1752042974618-target
+      selected: false
+      source: '1752042238962'
+      sourceHandle: 'false'
+      target: '1752042974618'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: assigner
+      id: 1751595003695-false-17520429980490-target
+      selected: false
+      source: '1751595003695'
+      sourceHandle: 'false'
+      target: '17520429980490'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1751595003695-true-1751595526571-target
+      selected: false
+      source: '1751595003695'
+      sourceHandle: 'true'
+      target: '1751595526571'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: if-else
+      id: 1752042974618-source-1752112334268-target
+      selected: false
+      source: '1752042974618'
+      sourceHandle: source
+      target: '1752112334268'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: document-extractor
+      id: 1752112334268-false-1752112310507-target
+      selected: false
+      source: '1752112334268'
+      sourceHandle: 'false'
+      target: '1752112310507'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: if-else
+      id: 1750663690075-1751594817305-1752117735905-target
+      selected: false
+      source: '1750663690075'
+      sourceHandle: '1751594817305'
+      target: '1752117735905'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: if-else
+      id: 1752117735905-true-1752042238962-target
+      selected: false
+      source: '1752117735905'
+      sourceHandle: 'true'
+      target: '1752042238962'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: iteration
+      id: 1752117735905-false-1751968948567-target
+      selected: false
+      source: '1752117735905'
+      sourceHandle: 'false'
+      target: '1751968948567'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: iteration
+        targetType: llm
+      id: 1751690688100-source-1751254177443-target
+      selected: false
+      source: '1751690688100'
+      sourceHandle: source
+      target: '1751254177443'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: 17516885020400-source-1751688648757-target
+      selected: false
+      source: '17516885020400'
+      sourceHandle: source
+      target: '1751688648757'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: document-extractor
+        targetType: assigner
+      id: 1752112310507-source-1752139477948-target
+      selected: false
+      source: '1752112310507'
+      sourceHandle: source
+      target: '1752139477948'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: assigner
+        targetType: llm
+      id: 1752139477948-source-1751254177443-target
+      selected: false
+      source: '1752139477948'
+      sourceHandle: source
+      target: '1751254177443'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1752112334268-true-1751254177443-target
+      selected: false
+      source: '1752112334268'
+      sourceHandle: 'true'
+      target: '1751254177443'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: code
+      id: 1751688648757-source-1752217546105-target
+      source: '1751688648757'
+      sourceHandle: source
+      target: '1752217546105'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: tool
+      id: 1752217546105-source-17522173998220-target
+      source: '1752217546105'
+      sourceHandle: source
+      target: '17522173998220'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: parameter-extractor
+        targetType: template-transform
+      id: 1751700084293-source-1751960169028-target
+      source: '1751700084293'
+      sourceHandle: source
+      target: '1751960169028'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: 17522173998220-source-1752130402820-target
+      source: '17522173998220'
+      sourceHandle: source
+      target: '1752130402820'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: parameter-extractor
+      id: 1752130402820-source-1751700084293-target
+      selected: false
+      source: '1752130402820'
+      sourceHandle: source
+      target: '1751700084293'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1751690688100'
+        sourceType: tool
+        targetType: code
+      id: 1751690717445-source-1752125902630-target
+      source: '1751690717445'
+      sourceHandle: source
+      target: '1752125902630'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: assigner
+      id: 1751595526571-source-1752377817644-target
+      source: '1751595526571'
+      sourceHandle: source
+      target: '1752377817644'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: assigner
+        targetType: answer
+      id: 1752377817644-source-1751597118696-target
+      source: '1752377817644'
+      sourceHandle: source
+      target: '1751597118696'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: assigner
+      id: 1752031262049-false-1752377890762-target
+      source: '1752031262049'
+      sourceHandle: 'false'
+      target: '1752377890762'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: assigner
+        targetType: answer
+      id: 1752377890762-source-1752031308548-target
+      source: '1752377890762'
+      sourceHandle: source
+      target: '1752031308548'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables: []
+      height: 54
+      id: '1750663670720'
+      position:
+        x: -266.8108475836128
+        y: -128.57132213947463
+      positionAbsolute:
+        x: -266.8108475836128
+        y: -128.57132213947463
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        classes:
+        - id: '1'
+          name: 应收账款回收风险分析提供建议或优化
+        - id: '1751594817305'
+          name: 应收账款回收建议确定
+        - id: '1751687502297'
+          name: 生成审计底稿
+        - id: '1752031137902'
+          name: 其他问题
+        desc: ''
+        instruction: 分类1:单独输入企业名称时，根据{{#conversation.latest_branch#}}选择问题分类，1:分类1，2:分类2，3:分类3
+        instructions: ''
+        memory:
+          query_prompt_template: '{{#sys.query#}}'
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        query_variable_selector:
+        - '1750663670720'
+        - sys.query
+        selected: false
+        title: 问题分类器
+        topics: []
+        type: question-classifier
+        vision:
+          enabled: false
+      height: 248
+      id: '1750663690075'
+      position:
+        x: 72.46767190009018
+        y: -128.57132213947463
+      positionAbsolute:
+        x: 72.46767190009018
+        y: -128.57132213947463
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1751960810736.text#}}'
+        desc: ''
+        selected: false
+        title: 应收账款审计准备建议
+        type: answer
+        variables: []
+      height: 105
+      id: '1750663876620'
+      position:
+        x: 3212.052733396107
+        y: -61.11634975564968
+      positionAbsolute:
+        x: 3212.052733396107
+        y: -61.11634975564968
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        memory:
+          query_prompt_template: '{{#sys.query#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params: {}
+          mode: chat
+          name: deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        prompt_template:
+        - edition_type: basic
+          id: 380d49e2-073f-4f38-b178-75613155fe09
+          role: system
+          text: "## 角色\n你是一名专业的应收账款方面的审计专家，擅长根据实际的数据，给出最合理的审计建议。\n\n## 规则\n### 风险评级：\n\
+            - 0分：无风险\n- 1～4分：低风险\n- 4～10分：中风险\n- 10分以上：高风险\n### 属性含义：\n企业名称:company_name\n\
+            实缴资本占比:paid_in_capital_ratio\n成立年限:establishment_years\n经营到期年限:operation_expiry_years\n\
+            减资比例:capital_reduction_ratio\n主营业务方向变更次数:main_business_change_count\n\
+            被执行次数:enforcement_count\n被执行比例:enforcement_ratio\n行政处罚与经营异常次数:penalty_abnormal_count\n\
+            资产负债率:asset_liability_ratio\n流动比率:current_ratio\n速动比率:quick_ratio\n经营净现金流连续为负年数:negative_cash_flow_years\n\
+            应收账款周转率同比下降年数:ar_turnover_decline_years\n分支机构注销比例:branch_cancellation_ratio\n\
+            超额抵质押:excess_pledge\n作为被告的案件数:defendant_cases\n败诉案件数:lose_cases\n账龄超关注期占比:aging_over_concern_ratio\n\
+            应收账款金额占比:ar_amount_ratio\n\n## 输出要求\n输出一个JSON对象，格式如下：\n{\n    \"企业名称\"\
+            : \"\",  // 从{{#conversation.company_name#}}提取被审计单位的企业名称\n    \"审计过程\"\
+            : \"\",  // 描述审计过程中的关键步骤，包括数据来源、分析方法、风险评级依据等\n    \"审计结论\": \"\",  //\
+            \ 总结审计发现和主要结论，基于所有客商风险分析\n    \"下一步审计重点\":\"\", // （结合其他因素（如与此客户的合同执行情况、是否与其存在诉讼关系等）综合判断该应收账款收回的可能性，预估其未来现金流量现值，并将其低于应收账款账面价值的差额部分与被审计单位已计提的坏账准备进行比较，看被审计单位是否存在未足额计提坏账的情况；关注被审计单位是否建立应收账款台账管理制度、应收账款定期清查制度、坏账核销管理制度，是否存在应收账款管理责任不清、没有落实到人的情况。对于高风险客户，建议立即催收或暂停交易，对于中风险客户，需监控后续经营动态，缩短付款周期，对于低风险客户，可正常授信，但仍需定期复查。)\n\
+            \    \"各客商信息\": [  // 数组，每个元素对应一个客商，基于风险评分（{{#1751690688100.output#}}）分析\n\
+            \        {\n            \"客商名称\": \"\",  // 客商的具体名称\n            \"风险标题\"\
+            : \"\",  // 基于风险评级的简明标题，如“高风险应收账款清收问题”\n            \"风险评级\": \"\",  //\
+            \ 根据风险评分（{{#1751690688100.output#}}）和上述规则中的风险评级规则，转换为文字级别（“无风险”、“低风险”、“中风险”、“高风险”）\n\
+            \            \"风险描述\": \"\",  // 描述风险详情，包括：固定存在的审计问题（应收款项清收不力且未足额计提坏账准备）+\
+            \ 可能存在的审计问题（基于风险级别：高风险-极大可能无法收回；中风险-很可能无法收回；低风险-有可能无法收回，且未单独测试或足额计提坏账准备）\n\
+            \            \"审计建议\": \"\"  // 针对该客商的具体建议，基于风险级别：高风险-立即催收或暂停交易；中风险-监控经营动态、缩短付款周期；低风险-正常授信但定期复查；无风险-维持现状\n\
+            \        }\n    ]\n}\n\n## 内容要求\n1. **审计过程**：\n   - 结合{{#1751695527564.text#}}描述数据收集和分析步骤（例如，审查应收账款台账、评估客商风险评分）。\n\
+            2. **审计结论**：基于所有客商分析，总结整体风险水平、坏账准备充足性，以及管理建议。\n3. **各客商信息**：\n   - 每个客商独立分析，风险评级基于{{#1751690688100.output#}}的分数转换为文字。\n\
+            \   - 风险描述必须包含固定审计问题（应收款项清收不力且未足额计提坏账准备）和可能审计问题（基于风险级别细化）。\n   - 审计建议必须针对风险级别定制（高风险-立即行动；中风险-监控；低风险-复查）。\n\
+            \n## 输入依赖\n- 风险评分数据：{{#1751690688100.output#}}（用于各客商风险评级）。\n- 文本数据：{{#1751695527564.text#}}（用于审计过程分析等）。"
+        - id: 9eed1ef4-8698-4bf2-82e8-5781d01f38fd
+          role: user
+          text: '{{#sys.query#}}{{#conversation.file_content#}}'
+        - id: c0cdcfca-2e65-45b2-b387-61f272d6672a
+          role: assistant
+          text: ''
+        selected: false
+        structured_output_enabled: false
+        title: 审计分析专家
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1751254177443'
+      position:
+        x: 2174.474363227285
+        y: -254.2271180833738
+      positionAbsolute:
+        x: 2174.474363227285
+        y: -254.2271180833738
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - sys
+          - query
+        desc: ''
+        memory:
+          query_prompt_template: '{{#sys.query#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params: {}
+          mode: chat
+          name: deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        prompt_template:
+        - id: abbe42ee-ba1e-488a-b511-c9870afb3693
+          role: system
+          text: '##角色
+
+            你是一名企业名称提炼专家，提取用户输入涉及的企业，不编造任何其他信息，禁止分析、变更企业名称
+
+            ##要求
+
+            1.若存在多个企业，仅保留第一个
+
+            2.输出仅保留企业名称，不存在其他文本
+
+            3.若不存在企业则再次尝试从{{#context#}}提起企业名称，存在则仅输出企业名称，包含其他文本；不存在则输出“未知企业”
+
+            '
+        - role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: 提取企业名称
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1751254331894'
+      position:
+        x: 757.0739072194383
+        y: -871.8562659470333
+      positionAbsolute:
+        x: 757.0739072194383
+        y: -871.8562659470333
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1751264404438.text#}}'
+        desc: ''
+        selected: false
+        title: 通用审计准备建议
+        type: answer
+        variables: []
+      height: 105
+      id: '1751264495502'
+      position:
+        x: 775.9781516423261
+        y: 1042.7268416035704
+      positionAbsolute:
+        x: 775.9781516423261
+        y: 1042.7268416035704
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: contains
+            id: 133ab840-f4f4-4cc0-aa75-e651e805c640
+            value: 未知
+            varType: string
+            variable_selector:
+            - '1751254331894'
+            - text
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 判断是否存在被审计企业
+        type: if-else
+      height: 126
+      id: '1751595003695'
+      position:
+        x: 757.0739072194383
+        y: -705.2199667277135
+      positionAbsolute:
+        x: 757.0739072194383
+        y: -705.2199667277135
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        prompt_template:
+        - id: d3bd9cec-d38e-4b1d-aebb-f44ea27db2fd
+          role: system
+          text: '##角色
+
+            你是一名异常处理专家，能够根据不同条件的输入，选择给用户输出的提示信息
+
+            ##目标
+
+            通知用户缺少必要的企业名称输入，简短提示即可'
+        selected: false
+        title: 异常处理专家
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1751595526571'
+      position:
+        x: 1091.4618456721164
+        y: -675.0423195571555
+      positionAbsolute:
+        x: 1091.4618456721164
+        y: -675.0423195571555
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1751595526571.text#}}'
+        desc: ''
+        selected: false
+        title: 异常回复
+        type: answer
+        variables: []
+      height: 105
+      id: '1751597118696'
+      position:
+        x: 1440.8948024734539
+        y: -871.8562659470333
+      positionAbsolute:
+        x: 1440.8948024734539
+        y: -871.8562659470333
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        prompt_template:
+        - id: 9db5f850-d307-4a7e-a9ed-7ffcafb0c4cf
+          role: system
+          text: '##角色
+
+            你是一名问题提炼专家，能够根据{{#sys.query#}}内容去除企业名称，并整理并提取涉及的问题关键字，保持原意，不编造任何其他信息
+
+            ##要求
+
+            仅输出整理后的问题关键字3个即可，并使用空格隔开，其中一个关键字存在于{{#sys.query#}}内容中
+
+            {{#context#}}'
+        selected: false
+        title: 通用问题转换
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1751597243049'
+      position:
+        x: 1091.4618456721164
+        y: -246.19645306075597
+      positionAbsolute:
+        x: 1091.4618456721164
+        y: -246.19645306075597
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        error_strategy: fail-branch
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Database type
+            ja_JP: Database type
+            pt_BR: Database type
+            zh_Hans: 数据库类型
+          label:
+            en_US: Database type
+            ja_JP: Database type
+            pt_BR: Database type
+            zh_Hans: 数据库类型
+          llm_description: Database type
+          max: null
+          min: null
+          name: db_type
+          options:
+          - label:
+              en_US: MySQL
+              ja_JP: MySQL
+              pt_BR: MySQL
+              zh_Hans: MySQL
+            value: mysql
+          - label:
+              en_US: PostgreSQL
+              ja_JP: PostgreSQL
+              pt_BR: PostgreSQL
+              zh_Hans: PostgreSQL
+            value: postgresql
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Database ip/host
+            ja_JP: Database ip/host
+            pt_BR: Database ip/host
+            zh_Hans: 数据库IP/域名
+          label:
+            en_US: Database ip/host
+            ja_JP: Database ip/host
+            pt_BR: Database ip/host
+            zh_Hans: 数据库IP/域名
+          llm_description: Database ip/host
+          max: null
+          min: null
+          name: host
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Database port
+            ja_JP: Database port
+            pt_BR: Database port
+            zh_Hans: 数据库端口
+          label:
+            en_US: Database port
+            ja_JP: Database port
+            pt_BR: Database port
+            zh_Hans: 数据库端口
+          llm_description: Database port
+          max: 65535
+          min: 1
+          name: port
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Database name
+            ja_JP: Database name
+            pt_BR: Database name
+            zh_Hans: 数据库名称
+          label:
+            en_US: Database name
+            ja_JP: Database name
+            pt_BR: Database name
+            zh_Hans: 数据库名称
+          llm_description: Database name
+          max: null
+          min: null
+          name: db_name
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Username
+            ja_JP: Username
+            pt_BR: Username
+            zh_Hans: 用户名
+          label:
+            en_US: Username
+            ja_JP: Username
+            pt_BR: Username
+            zh_Hans: 用户名
+          llm_description: Username
+          max: null
+          min: null
+          name: username
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Password
+            ja_JP: Password
+            pt_BR: Password
+            zh_Hans: 密码
+          label:
+            en_US: Password
+            ja_JP: Password
+            pt_BR: Password
+            zh_Hans: 密码
+          llm_description: Password
+          max: null
+          min: null
+          name: password
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: secret-input
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Schema name
+            ja_JP: Schema name
+            pt_BR: Schema name
+            zh_Hans: 数据库Schema PGSQL用户选填，默认为public
+          label:
+            en_US: Schema name
+            ja_JP: Schema name
+            pt_BR: Schema name
+            zh_Hans: 数据库Schema PGSQL用户选填，默认为public
+          llm_description: Schema name
+          max: null
+          min: null
+          name: schema
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Fetching data from the database using natural language.
+            ja_JP: Fetching data from the database using natural language.
+            pt_BR: Fetching data from the database using natural language.
+            zh_Hans: Fetching data from the database using natural language.
+          label:
+            en_US: SQL string
+            ja_JP: SQL string
+            pt_BR: SQL string
+            zh_Hans: 待执行的 SQL 语句
+          llm_description: Fetching data from the database using natural language.
+          max: null
+          min: null
+          name: sql
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: json
+          form: form
+          human_description:
+            en_US: result_format
+            ja_JP: result_format
+            pt_BR: result_format
+            zh_Hans: 返回数据格式
+          label:
+            en_US: result_format
+            ja_JP: result_format
+            pt_BR: result_format
+            zh_Hans: 返回数据格式
+          llm_description: result_format
+          max: null
+          min: null
+          name: result_format
+          options:
+          - label:
+              en_US: JSON
+              ja_JP: JSON
+              pt_BR: JSON
+              zh_Hans: JSON
+            value: json
+          - label:
+              en_US: TEXT
+              ja_JP: TEXT
+              pt_BR: TEXT
+              zh_Hans: TEXT
+            value: text
+          - label:
+              en_US: CSV
+              ja_JP: CSV
+              pt_BR: CSV
+              zh_Hans: CSV
+            value: csv
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        params:
+          db_name: ''
+          db_type: ''
+          host: ''
+          password: ''
+          port: ''
+          result_format: ''
+          schema: ''
+          sql: ''
+          username: ''
+        provider_id: jaguarliuu/rookie_text2data/rookie_text2data
+        provider_name: jaguarliuu/rookie_text2data/rookie_text2data
+        provider_type: builtin
+        selected: false
+        title: 审计规则查询
+        tool_configurations:
+          db_name: audit-pioneer
+          db_type: mysql
+          host: 121.43.233.12
+          password: 1qaz@WSX
+          port: 3408
+          result_format: json
+          username: root
+        tool_description: sql 执行器
+        tool_label: rookie_excute_sql
+        tool_name: rookie_excute_sql
+        tool_parameters:
+          schema:
+            type: mixed
+            value: ''
+          sql:
+            type: mixed
+            value: select `index`, level, score, weight from rule where model_id =
+              1
+        type: tool
+      height: 282
+      id: '1751597997390'
+      position:
+        x: 1447.0711641967105
+        y: -705.2199667277135
+      positionAbsolute:
+        x: 1447.0711641967105
+        y: -705.2199667277135
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - '1751700084293'
+          - process
+          variable_selector:
+          - conversation
+          - process
+          write_mode: over-write
+        - input_type: variable
+          operation: over-write
+          value:
+          - '1751700084293'
+          - conclusion
+          variable_selector:
+          - conversation
+          - conclusion
+          write_mode: over-write
+        - input_type: variable
+          operation: over-write
+          value:
+          - '1751700084293'
+          - next_plan
+          variable_selector:
+          - conversation
+          - next_plan
+          write_mode: over-write
+        - input_type: variable
+          operation: over-write
+          value:
+          - '1751700084293'
+          - customers
+          variable_selector:
+          - conversation
+          - customers
+          write_mode: over-write
+        selected: false
+        title: 设置会话变量
+        type: assigner
+        version: '2'
+      height: 172
+      id: '1751688125434'
+      position:
+        x: 2884.297342427027
+        y: -123.72881146583417
+      positionAbsolute:
+        x: 2884.297342427027
+        y: -123.72881146583417
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: 审计方案已保存至数据库，请前往查看
+        desc: ''
+        selected: false
+        title: 审计方案保存通知
+        type: answer
+        variables: []
+      height: 102
+      id: '1751688246531'
+      position:
+        x: 2902.8721300253205
+        y: 138.4102750325908
+      positionAbsolute:
+        x: 2902.8721300253205
+        y: 138.4102750325908
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        error_strategy: fail-branch
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Database type
+            ja_JP: Database type
+            pt_BR: Database type
+            zh_Hans: 数据库类型
+          label:
+            en_US: Database type
+            ja_JP: Database type
+            pt_BR: Database type
+            zh_Hans: 数据库类型
+          llm_description: Database type
+          max: null
+          min: null
+          name: db_type
+          options:
+          - label:
+              en_US: MySQL
+              ja_JP: MySQL
+              pt_BR: MySQL
+              zh_Hans: MySQL
+            value: mysql
+          - label:
+              en_US: PostgreSQL
+              ja_JP: PostgreSQL
+              pt_BR: PostgreSQL
+              zh_Hans: PostgreSQL
+            value: postgresql
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Database ip/host
+            ja_JP: Database ip/host
+            pt_BR: Database ip/host
+            zh_Hans: 数据库IP/域名
+          label:
+            en_US: Database ip/host
+            ja_JP: Database ip/host
+            pt_BR: Database ip/host
+            zh_Hans: 数据库IP/域名
+          llm_description: Database ip/host
+          max: null
+          min: null
+          name: host
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Database port
+            ja_JP: Database port
+            pt_BR: Database port
+            zh_Hans: 数据库端口
+          label:
+            en_US: Database port
+            ja_JP: Database port
+            pt_BR: Database port
+            zh_Hans: 数据库端口
+          llm_description: Database port
+          max: 65535
+          min: 1
+          name: port
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Database name
+            ja_JP: Database name
+            pt_BR: Database name
+            zh_Hans: 数据库名称
+          label:
+            en_US: Database name
+            ja_JP: Database name
+            pt_BR: Database name
+            zh_Hans: 数据库名称
+          llm_description: Database name
+          max: null
+          min: null
+          name: db_name
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Username
+            ja_JP: Username
+            pt_BR: Username
+            zh_Hans: 用户名
+          label:
+            en_US: Username
+            ja_JP: Username
+            pt_BR: Username
+            zh_Hans: 用户名
+          llm_description: Username
+          max: null
+          min: null
+          name: username
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Password
+            ja_JP: Password
+            pt_BR: Password
+            zh_Hans: 密码
+          label:
+            en_US: Password
+            ja_JP: Password
+            pt_BR: Password
+            zh_Hans: 密码
+          llm_description: Password
+          max: null
+          min: null
+          name: password
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: secret-input
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Schema name
+            ja_JP: Schema name
+            pt_BR: Schema name
+            zh_Hans: 数据库Schema PGSQL用户选填，默认为public
+          label:
+            en_US: Schema name
+            ja_JP: Schema name
+            pt_BR: Schema name
+            zh_Hans: 数据库Schema PGSQL用户选填，默认为public
+          llm_description: Schema name
+          max: null
+          min: null
+          name: schema
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Fetching data from the database using natural language.
+            ja_JP: Fetching data from the database using natural language.
+            pt_BR: Fetching data from the database using natural language.
+            zh_Hans: Fetching data from the database using natural language.
+          label:
+            en_US: SQL string
+            ja_JP: SQL string
+            pt_BR: SQL string
+            zh_Hans: 待执行的 SQL 语句
+          llm_description: Fetching data from the database using natural language.
+          max: null
+          min: null
+          name: sql
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: json
+          form: form
+          human_description:
+            en_US: result_format
+            ja_JP: result_format
+            pt_BR: result_format
+            zh_Hans: 返回数据格式
+          label:
+            en_US: result_format
+            ja_JP: result_format
+            pt_BR: result_format
+            zh_Hans: 返回数据格式
+          llm_description: result_format
+          max: null
+          min: null
+          name: result_format
+          options:
+          - label:
+              en_US: JSON
+              ja_JP: JSON
+              pt_BR: JSON
+              zh_Hans: JSON
+            value: json
+          - label:
+              en_US: TEXT
+              ja_JP: TEXT
+              pt_BR: TEXT
+              zh_Hans: TEXT
+            value: text
+          - label:
+              en_US: CSV
+              ja_JP: CSV
+              pt_BR: CSV
+              zh_Hans: CSV
+            value: csv
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        params:
+          db_name: ''
+          db_type: ''
+          host: ''
+          password: ''
+          port: ''
+          result_format: ''
+          schema: ''
+          sql: ''
+          username: ''
+        provider_id: jaguarliuu/rookie_text2data/rookie_text2data
+        provider_name: jaguarliuu/rookie_text2data/rookie_text2data
+        provider_type: builtin
+        selected: false
+        title: 企业客商查询
+        tool_configurations:
+          db_name: audit-pioneer
+          db_type: mysql
+          host: 121.43.233.12
+          password: 1qaz@WSX
+          port: 3408
+          result_format: json
+          username: root
+        tool_description: sql 执行器
+        tool_label: rookie_excute_sql
+        tool_name: rookie_excute_sql
+        tool_parameters:
+          schema:
+            type: mixed
+            value: ''
+          sql:
+            type: mixed
+            value: select  name from customer
+        type: tool
+      height: 282
+      id: '17516885020400'
+      position:
+        x: 1818.3360585364915
+        y: -705.2199667277135
+      positionAbsolute:
+        x: 1818.3360585364915
+        y: -705.2199667277135
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "def main(records: list) -> dict:\n    name_set = set()\n    for item\
+          \ in records:  # 遍历外层列表\n        if \"result\" in item:  # 确保存在result键\n\
+          \            for entry in item[\"result\"]:  # 遍历result列表\n            \
+          \    if \"name\" in entry:  # 确保存在name键\n                    name_set.add(entry[\"\
+          name\"])\n    return {\n        \"customers\": list(name_set)\n    }\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          customers:
+            children: null
+            type: array[string]
+        selected: false
+        title: 提取客商清单
+        type: code
+        variables:
+        - value_selector:
+          - '17516885020400'
+          - json
+          variable: records
+      height: 54
+      id: '1751688648757'
+      position:
+        x: 1809.0791046981744
+        y: -865.7706138443289
+      positionAbsolute:
+        x: 1809.0791046981744
+        y: -865.7706138443289
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        error_handle_mode: terminated
+        height: 329
+        is_parallel: false
+        iterator_selector:
+        - '1751688648757'
+        - customers
+        output_selector:
+        - '1752125902630'
+        - result
+        output_type: array[string]
+        parallel_nums: 10
+        selected: false
+        start_node_id: 1751690688100start
+        title: 客商信息提炼
+        type: iteration
+        width: 286
+      height: 329
+      id: '1751690688100'
+      position:
+        x: 2160.420699437704
+        y: -753.4039568634205
+      positionAbsolute:
+        x: 2160.420699437704
+        y: -753.4039568634205
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 286
+      zIndex: 1
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1751690688100start
+      parentId: '1751690688100'
+      position:
+        x: 24
+        y: 68
+      positionAbsolute:
+        x: 2184.420699437704
+        y: -685.4039568634205
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        is_team_authorization: true
+        iteration_id: '1751690688100'
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          label:
+            en_US: 企业名称
+            ja_JP: 企业名称
+            pt_BR: 企业名称
+            zh_Hans: 企业名称
+          llm_description: ''
+          max: null
+          min: null
+          name: company_name
+          options: []
+          placeholder:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        params:
+          company_name: ''
+        provider_id: 6ad0eac2-50b8-4ded-ab9d-36effb39957c
+        provider_name: 企业审计信息提炼工具
+        provider_type: workflow
+        selected: false
+        title: 企业审计信息提炼工具
+        tool_configurations: {}
+        tool_description: 从财务、法务、运营、合规、关联方、舆情六大方面，对企业审计信息进行提炼
+        tool_label: 企业审计信息提炼工具
+        tool_name: company_audit_tool
+        tool_parameters:
+          company_name:
+            type: mixed
+            value: '{{#1751690688100.item#}}'
+        type: tool
+      height: 54
+      id: '1751690717445'
+      parentId: '1751690688100'
+      position:
+        x: 25.60902096162272
+        y: 138.26831894790587
+      positionAbsolute:
+        x: 2186.029720399327
+        y: -615.1356379155146
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        desc: ''
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          label:
+            en_US: 问题
+            ja_JP: 问题
+            pt_BR: 问题
+            zh_Hans: 问题
+          llm_description: ''
+          max: null
+          min: null
+          name: question
+          options: []
+          placeholder:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        params:
+          question: ''
+        provider_id: cbba39e0-cbd2-4475-bdd8-b4ee1712b928
+        provider_name: 审计知识检索工具
+        provider_type: workflow
+        selected: false
+        title: 审计知识检索工具
+        tool_configurations: {}
+        tool_description: 结合审计知识、互联网审计数据、结构化数据库私有审计信息，给出用户最可靠的审计知识
+        tool_label: 审计知识检索工具
+        tool_name: audit_knowledge_tool
+        tool_parameters:
+          question:
+            type: mixed
+            value: '{{#1751597243049.text#}}'
+        type: tool
+      height: 54
+      id: '1751695527564'
+      position:
+        x: 1447.0711641967105
+        y: -246.19645306075597
+      positionAbsolute:
+        x: 1447.0711641967105
+        y: -246.19645306075597
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          label:
+            en_US: 问题
+            ja_JP: 问题
+            pt_BR: 问题
+            zh_Hans: 问题
+          llm_description: ''
+          max: null
+          min: null
+          name: question
+          options: []
+          placeholder:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        params:
+          question: ''
+        provider_id: cbba39e0-cbd2-4475-bdd8-b4ee1712b928
+        provider_name: 审计知识检索工具
+        provider_type: workflow
+        selected: false
+        title: 审计知识检索工具
+        tool_configurations: {}
+        tool_description: 结合审计知识、互联网审计数据、结构化数据库私有审计信息，给出用户最可靠的审计知识
+        tool_label: 审计知识检索工具
+        tool_name: audit_knowledge_tool
+        tool_parameters:
+          question:
+            type: mixed
+            value: '{{#sys.query#}}'
+        type: tool
+      height: 54
+      id: '17516957148560'
+      position:
+        x: 420.1041949840144
+        y: 1042.7268416035704
+      positionAbsolute:
+        x: 420.1041949840144
+        y: 1042.7268416035704
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        instruction: '##审计建议-客商详情（customers）来源{{#1751254177443.text#}}的客商审计建议（包含客商名称、风险等级、风险标题、风险描述、审计建议）'
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        parameters:
+        - description: 客商审计建议(customer_name:客商名称；title：风险标题；desc：风险描述；suggest：审计建议；level：风险评级)
+          name: customers
+          required: false
+          type: array[object]
+        - description: 审计过程
+          name: process
+          required: false
+          type: string
+        - description: 审计结论
+          name: conclusion
+          required: false
+          type: string
+        - description: 下一步审计重点
+          name: next_plan
+          required: false
+          type: string
+        query:
+        - '1751254177443'
+        - text
+        reasoning_mode: prompt
+        selected: false
+        title: 参数提取器
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1751700084293'
+      position:
+        x: 2541.87728801205
+        y: -254.2271180833738
+      positionAbsolute:
+        x: 2541.87728801205
+        y: -254.2271180833738
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - type: text
+            value: '{{#1751963295296.result#}}'
+          type: raw-text
+        desc: ''
+        headers: Content-Type:application/json
+        method: POST
+        params: ''
+        retry_config:
+          max_retries: 1
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 审计结果保存
+        type: http-request
+        url: http://121.43.233.12:8080/api/audit/save
+        variables: []
+      height: 139
+      id: '1751877267908'
+      position:
+        x: 2526.3883647611938
+        y: 138.4102750325908
+      positionAbsolute:
+        x: 2526.3883647611938
+        y: 138.4102750325908
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        selected: false
+        template: '# 各客商审计建议
+
+          {% for customer in customers %}
+
+          ## {{ customer.customer_name }}
+
+          ### 风险评级
+
+          {{ customer.level }}
+
+
+          ### 风险标题
+
+          {{ customer.title }}
+
+
+          ### 风险描述
+
+          {{ customer.desc }}
+
+
+          ### 审计建议
+
+          {{ customer.suggest }}
+
+
+          {% endfor %}
+
+
+          # 总体审计建议
+
+          {{ chart_md }}
+
+          ## 审计过程
+
+          {{ process }}
+
+
+          ## 审计结论
+
+          {{ conclusion }}
+
+
+          # 下一步审计重点
+
+          {{ next_plan }}'
+        title: 会话变量转Markdown
+        type: template-transform
+        variables:
+        - value_selector:
+          - conversation
+          - company_name
+          variable: company_name
+        - value_selector:
+          - '1751700084293'
+          - process
+          variable: process
+        - value_selector:
+          - '1751700084293'
+          - conclusion
+          variable: conclusion
+        - value_selector:
+          - '1751700084293'
+          - next_plan
+          variable: next_plan
+        - value_selector:
+          - '1751700084293'
+          - customers
+          variable: customers
+        - value_selector:
+          - '1752130402820'
+          - customer_chart
+          variable: chart_md
+      height: 54
+      id: '1751960169028'
+      position:
+        x: 2884.297342427027
+        y: -254.2271180833738
+      positionAbsolute:
+        x: 2884.297342427027
+        y: -254.2271180833738
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        prompt_template:
+        - id: 93d6414f-ba35-477c-97a6-2f767966f8a8
+          role: system
+          text: '{{#1751960169028.output#}}
+
+            ##要求
+
+            1.保持原内容语义和格式不变，尤其不要删除图表部分内容
+
+            2.保持原内容标题和文档结构
+
+            3.不进行任何分析
+
+            4.整体不要使用json格式输出'
+        selected: false
+        title: 格式检查
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1751960810736'
+      position:
+        x: 3212.052733396107
+        y: -254.2271180833738
+      positionAbsolute:
+        x: 3212.052733396107
+        y: -254.2271180833738
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "\ndef main(company_name: str, process: str, conclusion: str, customers:\
+          \ list, urls: list) -> dict:\n    import json\n    # 构建最终结果字典\n    result_dict\
+          \ = {\n        \"company_name\": company_name,\n        \"process\": process,\n\
+          \        \"conclusion\": conclusion,\n        \"next_plan\": \"\",  # 下一步审计重点（根据需求可添加生成逻辑）\n\
+          \        \"customers\": []\n    }\n    \n    # 处理客商信息\n    for customer\
+          \ in customers:\n        # 确保客商信息包含所有必要字段\n        customer_data = {\n \
+          \           \"customer_name\": customer.get(\"customer_name\", \"\"),\n\
+          \            \"title\": customer.get(\"title\", \"\"),\n            \"level\"\
+          : customer.get(\"level\", \"\"),\n            \"desc\": customer.get(\"\
+          desc\", \"\"),\n            \"suggest\": customer.get(\"suggest\", \"\"\
+          )\n        }\n        # 检查URL列表中是否包含当前客商名称\n        current_customer_name\
+          \ = customer_data[\"customer_name\"]\n        if current_customer_name:\n\
+          \            for url in urls:\n                # 当客商名称出现在URL中时，添加到客商数据\n\
+          \                if current_customer_name in url:\n                    customer_data[\"\
+          attach_url\"] = url\n                    break  # 找到第一个匹配项后停止搜索\n      \
+          \  \n        result_dict[\"customers\"].append(customer_data)\n    \n  \
+          \  # 转换为JSON字符串\n    json_result = json.dumps(result_dict, ensure_ascii=False,\
+          \ indent=2)\n    \n    return {\"result\": json_result}\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: ' 参数构建'
+        type: code
+        variables:
+        - value_selector:
+          - conversation
+          - company_name
+          variable: company_name
+        - value_selector:
+          - conversation
+          - process
+          variable: process
+        - value_selector:
+          - conversation
+          - conclusion
+          variable: conclusion
+        - value_selector:
+          - conversation
+          - customers
+          variable: customers
+        - value_selector:
+          - '1751968948567'
+          - output
+          variable: urls
+      height: 54
+      id: '1751963295296'
+      position:
+        x: 2155.51449162446
+        y: 138.4102750325908
+      positionAbsolute:
+        x: 2155.51449162446
+        y: 138.4102750325908
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        error_handle_mode: terminated
+        height: 291
+        is_parallel: false
+        iterator_selector:
+        - conversation
+        - customers
+        output_selector:
+        - '1751970563348'
+        - attach_url
+        output_type: array[string]
+        parallel_nums: 10
+        selected: false
+        start_node_id: 1751968948567start
+        title: 文件上传
+        type: iteration
+        width: 1347
+      height: 291
+      id: '1751968948567'
+      position:
+        x: 704.0091598072215
+        y: 138.4102750325908
+      positionAbsolute:
+        x: 704.0091598072215
+        y: 138.4102750325908
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 1347
+      zIndex: 1
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1751968948567start
+      parentId: '1751968948567'
+      position:
+        x: 24
+        y: 68
+      positionAbsolute:
+        x: 728.0091598072215
+        y: 206.4102750325908
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1751968948567'
+        model:
+          completion_params: {}
+          mode: chat
+          name: deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        prompt_template:
+        - id: 7411866d-1508-439a-a94d-a20d8b542399
+          role: system
+          text: 根据{{#1751968948567.item#}}提供的内容，编写审计建议
+        selected: false
+        title: 文件内容生成
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1751969003732'
+      parentId: '1751968948567'
+      position:
+        x: 128
+        y: 68
+      positionAbsolute:
+        x: 832.0091598072215
+        y: 206.4102750325908
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        is_team_authorization: true
+        iteration_id: '1751968948567'
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: The access key for MinIO authentication.
+            ja_JP: The access key for MinIO authentication.
+            pt_BR: The access key for MinIO authentication.
+            zh_Hans: 用于MinIO身份验证的访问密钥。
+          label:
+            en_US: MinIO Access Key
+            ja_JP: MinIO Access Key
+            pt_BR: MinIO Access Key
+            zh_Hans: MinIO访问密钥
+          llm_description: A tool to write generated content to a MinIO bucket.
+          max: null
+          min: null
+          name: access_key
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: The secret key for MinIO authentication.
+            ja_JP: The secret key for MinIO authentication.
+            pt_BR: The secret key for MinIO authentication.
+            zh_Hans: 用于MinIO身份验证的秘密密钥。
+          label:
+            en_US: MinIO Secret Key
+            ja_JP: MinIO Secret Key
+            pt_BR: MinIO Secret Key
+            zh_Hans: MinIO秘密密钥
+          llm_description: A tool to write generated content to a MinIO bucket.
+          max: null
+          min: null
+          name: secret_key
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: The endpoint URL of the MinIO server (e.g., http://localhost:9000).
+            ja_JP: The endpoint URL of the MinIO server (e.g., http://localhost:9000).
+            pt_BR: The endpoint URL of the MinIO server (e.g., http://localhost:9000).
+            zh_Hans: MinIO服务器的端点URL（例如 http://localhost:9000）。
+          label:
+            en_US: MinIO Endpoint URL
+            ja_JP: MinIO Endpoint URL
+            pt_BR: MinIO Endpoint URL
+            zh_Hans: MinIO端点URL
+          llm_description: A tool to write generated content to a MinIO bucket.
+          max: null
+          min: null
+          name: endpoint
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: The name of the MinIO bucket to write to.
+            ja_JP: The name of the MinIO bucket to write to.
+            pt_BR: The name of the MinIO bucket to write to.
+            zh_Hans: 要写入的MinIO存储桶名称。
+          label:
+            en_US: Bucket Name
+            ja_JP: Bucket Name
+            pt_BR: Bucket Name
+            zh_Hans: 存储桶名称
+          llm_description: A tool to write generated content to a MinIO bucket.
+          max: null
+          min: null
+          name: bucket_name
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The content to be written to MinIO.
+            ja_JP: The content to be written to MinIO.
+            pt_BR: The content to be written to MinIO.
+            zh_Hans: 要写入MinIO的内容。
+          label:
+            en_US: Content
+            ja_JP: Content
+            pt_BR: Content
+            zh_Hans: 内容
+          llm_description: A tool to write generated content to a MinIO bucket.
+          max: null
+          min: null
+          name: content
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The name of the object/file in the MinIO bucket.
+            ja_JP: The name of the object/file in the MinIO bucket.
+            pt_BR: The name of the object/file in the MinIO bucket.
+            zh_Hans: MinIO存储桶中的对象/文件名。
+          label:
+            en_US: Object Name
+            ja_JP: Object Name
+            pt_BR: Object Name
+            zh_Hans: 对象名称
+          llm_description: A tool to write generated content to a MinIO bucket.
+          max: null
+          min: null
+          name: object_name
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        params:
+          access_key: ''
+          bucket_name: ''
+          content: ''
+          endpoint: ''
+          object_name: ''
+          secret_key: ''
+        provider_id: aias00/minio/minio
+        provider_name: aias00/minio/minio
+        provider_type: builtin
+        selected: false
+        title: MinIO写入工具
+        tool_configurations:
+          access_key: minioadmin
+          bucket_name: audit
+          endpoint: http://121.43.233.12:9000
+          secret_key: minioadmin
+        tool_description: 将内容写入MinIO存储桶的工具。
+        tool_label: MinIO写入工具
+        tool_name: minio_writer
+        tool_parameters:
+          content:
+            type: mixed
+            value: '{{#1751969003732.text#}}'
+          object_name:
+            type: mixed
+            value: attach_{{#1751970346265.customer_name#}}.docx
+        type: tool
+      height: 168
+      id: '1751969013331'
+      parentId: '1751968948567'
+      position:
+        x: 782.7330180490607
+        y: 67.11284950631966
+      positionAbsolute:
+        x: 1486.742177856282
+        y: 205.52312453891045
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1751968948567'
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        parameters:
+        - description: 客商名称：customer_name
+          name: customer_name
+          required: false
+          type: string
+        query:
+        - '1751968948567'
+        - item
+        reasoning_mode: prompt
+        selected: false
+        title: 参数提取器
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1751970346265'
+      parentId: '1751968948567'
+      position:
+        x: 450.7653166468491
+        y: 67.11284950631966
+      positionAbsolute:
+        x: 1154.7744764540707
+        y: 205.52312453891045
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        code: "def main(name: str) -> dict:\n    return {\n        \"attach_url\"\
+          :\"http://121.43.233.12:9000/audit/attach_\"+name+\".docx\"\n    }\n"
+        code_language: python3
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1751968948567'
+        outputs:
+          attach_url:
+            children: null
+            type: string
+        selected: false
+        title: 获取附件URL
+        type: code
+        variables:
+        - value_selector:
+          - '1751970346265'
+          - customer_name
+          variable: name
+      height: 54
+      id: '1751970563348'
+      parentId: '1751968948567'
+      position:
+        x: 1086.7330180490608
+        y: 67.11284950631966
+      positionAbsolute:
+        x: 1790.7421778562823
+        y: 205.52312453891045
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        memory:
+          query_prompt_template: '{{#sys.query#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params: {}
+          mode: chat
+          name: deepseek-ai/DeepSeek-V3
+          provider: langgenius/siliconflow/siliconflow
+        prompt_template:
+        - id: abbe42ee-ba1e-488a-b511-c9870afb3693
+          role: system
+          text: '##角色
+
+            你是一名企业名称提炼专家，能够根据{{#sys.query#}}提取涉及的企业，不编造任何其他信息，禁止分析、变更企业名称
+
+            ##要求
+
+            1.若存在多个企业，仅保留第一个
+
+            2.输出仅保留企业名称，不存在其他文本
+
+            3.若不存在企业则再次尝试从{{#sys.query#}}提起企业名称，存在则仅输出企业名称，包含其他文本；不存在则输出“未知企业”
+
+            {{#context#}}'
+        selected: false
+        title: 提取企业名称
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '17520312488070'
+      position:
+        x: 416.388933370839
+        y: 755.3967297492798
+      positionAbsolute:
+        x: 416.388933370839
+        y: 755.3967297492798
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: not contains
+            id: 6b45f6b7-cdd1-41e6-868c-8dbbeff52d08
+            value: 未知
+            varType: string
+            variable_selector:
+            - '17520312488070'
+            - text
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 判断是否存在被审计企业
+        type: if-else
+      height: 126
+      id: '1752031262049'
+      position:
+        x: 741.0125771742025
+        y: 755.3967297492798
+      positionAbsolute:
+        x: 741.0125771742025
+        y: 755.3967297492798
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: 请补充需要生成审计底稿涉及的企业，直接回复名称即可。
+        desc: ''
+        selected: false
+        title: 补充提醒
+        type: answer
+        variables: []
+      height: 118
+      id: '1752031308548'
+      position:
+        x: 1447.0711641967105
+        y: 862.0618457460325
+      positionAbsolute:
+        x: 1447.0711641967105
+        y: 862.0618457460325
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-490
+            key: ''
+            type: text
+            value: "{\n  \"company_name\": \"{{#conversation.company_name#}}\",\n\
+              \  \"status\": \"草稿\",\n  \"matter\": \"应收账款\",\n  \"name\": \"应收账款审计底稿\"\
+              ,\n  \"code\": \"10001\",\n  \"focus\": \"账龄信息、企业信息\",\n  \"operator\"\
+              : \"AI审计助手\",\n  \"source\": \"综合信息库\",\n  \"model\": \"客商综合分析\"\n}"
+          type: json
+        desc: ''
+        headers: Content-Type:application/json
+        method: POST
+        params: ''
+        retry_config:
+          max_retries: 1
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 审计底稿保存
+        type: http-request
+        url: http://121.43.233.12:8080/api/draft/save
+        variables: []
+      height: 139
+      id: '17520381090080'
+      position:
+        x: 1447.0711641967105
+        y: 576.5447577458483
+      positionAbsolute:
+        x: 1447.0711641967105
+        y: 576.5447577458483
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: 审计底稿模版已生成，请前往查看
+        desc: ''
+        selected: false
+        title: 底稿生成通知
+        type: answer
+        variables: []
+      height: 102
+      id: '1752038164718'
+      position:
+        x: 1841.003139367756
+        y: 576.5447577458483
+      positionAbsolute:
+        x: 1841.003139367756
+        y: 576.5447577458483
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - '17520312488070'
+          - text
+          variable_selector:
+          - conversation
+          - company_name
+          write_mode: over-write
+        selected: false
+        title: 会话变量设置
+        type: assigner
+        version: '2'
+      height: 88
+      id: '1752041520432'
+      position:
+        x: 1069.2102060797815
+        y: 706.3016416759311
+      positionAbsolute:
+        x: 1069.2102060797815
+        y: 706.3016416759311
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: empty
+            id: 74c0da51-6b9a-4487-802c-388745b21e3f
+            value: ''
+            varType: string
+            variable_selector:
+            - conversation
+            - company_name
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 必要条件检查
+        type: if-else
+      height: 126
+      id: '1752042238962'
+      position:
+        x: 421.9584982833757
+        y: -425.55889750824
+      positionAbsolute:
+        x: 421.9584982833757
+        y: -425.55889750824
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "\ndef main() -> dict:\n    return {\n        \"result\": \"\",\n  \
+          \  }\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 分支汇总
+        type: code
+        variables: []
+      height: 54
+      id: '1752042974618'
+      position:
+        x: 742.8668804735638
+        y: -346.57976584347875
+      positionAbsolute:
+        x: 742.8668804735638
+        y: -346.57976584347875
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - '1751254331894'
+          - text
+          variable_selector:
+          - conversation
+          - company_name
+          write_mode: over-write
+        selected: false
+        title: 会话变量初始化
+        type: assigner
+        version: '2'
+      height: 88
+      id: '17520429980490'
+      position:
+        x: 750.1585822108591
+        y: -521.8017026566561
+      positionAbsolute:
+        x: 750.1585822108591
+        y: -521.8017026566561
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: not empty
+            id: 74c0da51-6b9a-4487-802c-388745b21e3f
+            value: ''
+            varType: string
+            variable_selector:
+            - conversation
+            - company_name
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 必要条件检查
+        type: if-else
+      height: 126
+      id: '17521117569930'
+      position:
+        x: 420.1041949840144
+        y: 550.4475003145224
+      positionAbsolute:
+        x: 420.1041949840144
+        y: 550.4475003145224
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        is_array_file: true
+        selected: false
+        title: 文档提取器
+        type: document-extractor
+        variable_selector:
+        - sys
+        - files
+      height: 92
+      id: '1752112310507'
+      position:
+        x: 1447.0711641967105
+        y: -1.9196368934869668
+      positionAbsolute:
+        x: 1447.0711641967105
+        y: -1.9196368934869668
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: empty
+            id: 49a82120-310d-426c-8b6a-9ac16eeed329
+            value: ''
+            varType: array[file]
+            variable_selector:
+            - sys
+            - files
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 判断是否存文件
+        type: if-else
+      height: 126
+      id: '1752112334268'
+      position:
+        x: 1091.4618456721164
+        y: -81.19301231219423
+      positionAbsolute:
+        x: 1091.4618456721164
+        y: -81.19301231219423
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: empty
+            id: fd790f85-d97b-44fc-b6b6-4936a6b89d0d
+            value: ''
+            varType: string
+            variable_selector:
+            - conversation
+            - process
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 是否存在会话变量
+        type: if-else
+      height: 126
+      id: '1752117735905'
+      position:
+        x: 416.388933370839
+        y: -19.007465194539307
+      positionAbsolute:
+        x: 416.388933370839
+        y: -19.007465194539307
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import json\n\ndef satisfies_condition(condition_str, value):\n   \
+          \ \"\"\"检查数值是否满足条件字符串\"\"\"\n    # 替换中文符号并清理条件字符串\n    condition_str = condition_str.replace(\"\
+          ＜\", \"<\").replace(\"＞\", \">\").replace(\"＝\", \"=\").replace(\"\\r\"\
+          , \"\").strip()\n    conditions = condition_str.split('且')\n    \n    for\
+          \ cond in conditions:\n        cond = cond.strip()\n        # 处理纯数字条件 (如\
+          \ \"0\")\n        if cond.replace('.', '', 1).replace('-', '', 1).isdigit():\n\
+          \            if value != float(cond):\n                return False\n  \
+          \          continue\n        \n        # 解析比较操作符\n        op_map = {\"=\"\
+          : \"==\", \"＝\": \"==\"}\n        operators = [\"==\", \">=\", \"<=\", \"\
+          >\", \"<\", \"=\"]\n        op_found = None\n        for op in operators:\n\
+          \            if cond.startswith(op):\n                op_found = op\n  \
+          \              break\n        \n        if not op_found:\n            #\
+          \ 尝试匹配无空格操作符 (如 \">=0.5\")\n            for op in [\">=\", \"<=\", \"==\"\
+          , \">\", \"<\", \"=\"]:\n                if cond.startswith(op):\n     \
+          \               op_found = op\n                    break\n        \n   \
+          \     if op_found:\n            # 标准化操作符\n            op_clean = op_map.get(op_found,\
+          \ op_found)\n            num_str = cond[len(op_found):].strip()\n      \
+          \      try:\n                num_val = float(num_str)\n            except\
+          \ ValueError:\n                return False\n            \n            #\
+          \ 执行数值比较\n            if op_clean == \">=\" and not (value >= num_val):\n\
+          \                return False\n            elif op_clean == \"<=\" and not\
+          \ (value <= num_val):\n                return False\n            elif op_clean\
+          \ == \">\" and not (value > num_val):\n                return False\n  \
+          \          elif op_clean == \"<\" and not (value < num_val):\n         \
+          \       return False\n            elif op_clean == \"==\" and not (value\
+          \ == num_val):\n                return False\n        else:\n          \
+          \  return False\n    \n    return True\n\ndef main(name: str, indexDataJson:\
+          \ list, indexRuleJson: list) -> dict:\n    # 解析输入数据\n    try:\n        data\
+          \ = indexDataJson[0][\"result\"]\n    except:\n        data = {}\n    \n\
+          \    # 获取规则列表\n    rules = indexRuleJson[0][\"result\"] if indexRuleJson\
+          \ and indexRuleJson[0].get(\"status\") == \"success\" else []\n    \n  \
+          \  # 按指标分组规则\n    rule_groups = {}\n    for rule in rules:\n        idx\
+          \ = rule[\"index\"]\n        if idx not in rule_groups:\n            rule_groups[idx]\
+          \ = []\n        rule_groups[idx].append(rule)\n    \n    total_score = 0\n\
+          \    detail = []\n    \n    # 处理每个指标\n    for k, v in data.items():\n  \
+          \      if k not in rule_groups:\n            continue\n        \n      \
+          \  # 转换值为数值类型\n        try:\n            num_value = float(v) if isinstance(v,\
+          \ str) else v\n            if isinstance(num_value, str):\n            \
+          \    continue\n        except:\n            continue\n        \n       \
+          \ # 在规则组中匹配条件\n        matched_score = 0\n        for rule in rule_groups[k]:\n\
+          \            if satisfies_condition(rule[\"level\"], num_value):\n     \
+          \           matched_score = rule[\"score\"]\n                break\n   \
+          \     \n        # 记录结果\n        detail.append({k: matched_score})\n    \
+          \    total_score += matched_score\n    \n    return {\n        \"result\"\
+          : json.dumps({\n            \"name\": name,\n            \"score\": total_score,\n\
+          \            \"detail\": detail\n        }, ensure_ascii=False)\n    }"
+        code_language: python3
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1751690688100'
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 综合评分计算
+        type: code
+        variables:
+        - value_selector:
+          - '1751690717445'
+          - json
+          variable: indexDataJson
+        - value_selector:
+          - '1751597997390'
+          - json
+          variable: indexRuleJson
+        - value_selector:
+          - '1751690688100'
+          - item
+          variable: name
+      height: 54
+      id: '1752125902630'
+      parentId: '1751690688100'
+      position:
+        x: 24.030665022617995
+        y: 239.026182302792
+      positionAbsolute:
+        x: 2184.451364460322
+        y: -514.3777745606285
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        code: "def main(customers_jsons: list) -> dict:\n    import json\n    # 提取结果数据\n\
+          \    result_data = customers_jsons[0][\"result\"]\n\n    # 1. 固定横坐标数据\n\
+          \    indicators = ['正常期', '关注期', '次级风险', '可疑风险', '损失风险']\n\n    # 2. 按公司名称分组\n\
+          \    companies = {}\n    for item in result_data:\n        company = item[\"\
+          company_name\"]\n        if company not in companies:\n            companies[company]\
+          \ = {}\n        companies[company][item[\"remark\"]] = item[\"rate\"]\n\n\
+          \    # 3. 构建图例数据（公司名称列表）\n    legend_data = list(companies.keys())\n\n \
+          \   # 4. 构建系列数据\n    series = []\n    for company in legend_data:\n    \
+          \    # 按固定顺序提取该公司的指标值\n        values = [companies[company].get(indicator,\
+          \ 0) for indicator in indicators]\n        values = [value * 100 for value\
+          \ in values]\n\n        series.append({\n            \"name\": company,\n\
+          \            \"type\": \"bar\",\n            \"barGap\": 0,\n          \
+          \  \"label\": {\n                \"show\": True,\n                \"position\"\
+          : \"insideBottom\",\n                \"distance\": 15,\n               \
+          \ \"align\": \"left\",\n                \"verticalAlign\": \"middle\",\n\
+          \                \"rotate\": 90,\n                \"fontSize\": 16,\n  \
+          \              \"rich\": {\"name\": {}},\n                \"formatter\"\
+          : '{c}%'  # 添加%单位\n            },\n            \"emphasis\": {\"focus\"\
+          : \"series\"},\n            \"data\": values\n        })\n\n    # 构建完整的图表配置\n\
+          \    chart_config = {\n        \"tooltip\": {\n            \"trigger\":\
+          \ \"axis\",\n            \"axisPointer\": {\"type\": \"shadow\"},\n    \
+          \        \"formatter\": '{b}<br/>{a}: {c}%'  # 提示框添加%单位\n        },\n  \
+          \      \"legend\": {\"data\": legend_data},\n        \"toolbox\": {\n  \
+          \          \"show\": True,\n            \"orient\": \"vertical\",\n    \
+          \        \"left\": \"right\",\n            \"top\": \"center\",\n      \
+          \      \"feature\": {\n            \"mark\": {\"show\": True},\n       \
+          \     \"dataView\": {\"show\": True, \"readOnly\": False},\n           \
+          \ \"magicType\": {\"show\": True, \"type\": [\"line\", \"bar\", \"stack\"\
+          ]},\n            \"restore\": {\"show\": True},\n            \"saveAsImage\"\
+          : {\"show\": True}\n\n        }\n    },\n    \"xAxis\": [{\n    \"type\"\
+          : \"category\",\n    \"axisTick\": {\"show\": False},\n    \"data\": indicators,\n\
+          \    \"axisLabel\": {\n        \"interval\": 0,\n        \"rotate\": 45,\n\
+          \        \"margin\": 20\n    }\n    }],\n    \"yAxis\": {\n        \"type\"\
+          : \"value\",\n        \"axisLabel\": {\n            \"formatter\": '{value}%'\
+          \  # Y轴添加%单位\n        }\n    },\n    \"series\": series\n    }\n\n    #\
+          \ 转换为Markdown格式\n    chart_md = \"```echarts\\n\"\n    chart_md += json.dumps(chart_config,\
+          \ indent=2, ensure_ascii=False)\n    chart_md += \"\\n```\"\n\n    return\
+          \ {\"customer_chart\": chart_md}"
+        code_language: python3
+        desc: ''
+        outputs:
+          customer_chart:
+            children: null
+            type: string
+        selected: false
+        title: 图表参数构建
+        type: code
+        variables:
+        - value_selector:
+          - '17522173998220'
+          - json
+          variable: customers_jsons
+      height: 54
+      id: '1752130402820'
+      position:
+        x: 2526.3883647611938
+        y: -476.0790079986845
+      positionAbsolute:
+        x: 2526.3883647611938
+        y: -476.0790079986845
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        items:
+        - input_type: variable
+          operation: over-write
+          value:
+          - '1752112310507'
+          - text
+          variable_selector:
+          - conversation
+          - file_content
+          write_mode: over-write
+        selected: false
+        title: 会话文档设置
+        type: assigner
+        version: '2'
+      height: 88
+      id: '1752139477948'
+      position:
+        x: 1782.9794433746665
+        y: -1.9196368934869668
+      positionAbsolute:
+        x: 1782.9794433746665
+        y: -1.9196368934869668
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        error_strategy: fail-branch
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Database type
+            ja_JP: Database type
+            pt_BR: Database type
+            zh_Hans: 数据库类型
+          label:
+            en_US: Database type
+            ja_JP: Database type
+            pt_BR: Database type
+            zh_Hans: 数据库类型
+          llm_description: Database type
+          max: null
+          min: null
+          name: db_type
+          options:
+          - label:
+              en_US: MySQL
+              ja_JP: MySQL
+              pt_BR: MySQL
+              zh_Hans: MySQL
+            value: mysql
+          - label:
+              en_US: PostgreSQL
+              ja_JP: PostgreSQL
+              pt_BR: PostgreSQL
+              zh_Hans: PostgreSQL
+            value: postgresql
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Database ip/host
+            ja_JP: Database ip/host
+            pt_BR: Database ip/host
+            zh_Hans: 数据库IP/域名
+          label:
+            en_US: Database ip/host
+            ja_JP: Database ip/host
+            pt_BR: Database ip/host
+            zh_Hans: 数据库IP/域名
+          llm_description: Database ip/host
+          max: null
+          min: null
+          name: host
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Database port
+            ja_JP: Database port
+            pt_BR: Database port
+            zh_Hans: 数据库端口
+          label:
+            en_US: Database port
+            ja_JP: Database port
+            pt_BR: Database port
+            zh_Hans: 数据库端口
+          llm_description: Database port
+          max: 65535
+          min: 1
+          name: port
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Database name
+            ja_JP: Database name
+            pt_BR: Database name
+            zh_Hans: 数据库名称
+          label:
+            en_US: Database name
+            ja_JP: Database name
+            pt_BR: Database name
+            zh_Hans: 数据库名称
+          llm_description: Database name
+          max: null
+          min: null
+          name: db_name
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Username
+            ja_JP: Username
+            pt_BR: Username
+            zh_Hans: 用户名
+          label:
+            en_US: Username
+            ja_JP: Username
+            pt_BR: Username
+            zh_Hans: 用户名
+          llm_description: Username
+          max: null
+          min: null
+          name: username
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: Password
+            ja_JP: Password
+            pt_BR: Password
+            zh_Hans: 密码
+          label:
+            en_US: Password
+            ja_JP: Password
+            pt_BR: Password
+            zh_Hans: 密码
+          llm_description: Password
+          max: null
+          min: null
+          name: password
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: secret-input
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Schema name
+            ja_JP: Schema name
+            pt_BR: Schema name
+            zh_Hans: 数据库Schema PGSQL用户选填，默认为public
+          label:
+            en_US: Schema name
+            ja_JP: Schema name
+            pt_BR: Schema name
+            zh_Hans: 数据库Schema PGSQL用户选填，默认为public
+          llm_description: Schema name
+          max: null
+          min: null
+          name: schema
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Fetching data from the database using natural language.
+            ja_JP: Fetching data from the database using natural language.
+            pt_BR: Fetching data from the database using natural language.
+            zh_Hans: Fetching data from the database using natural language.
+          label:
+            en_US: SQL string
+            ja_JP: SQL string
+            pt_BR: SQL string
+            zh_Hans: 待执行的 SQL 语句
+          llm_description: Fetching data from the database using natural language.
+          max: null
+          min: null
+          name: sql
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: json
+          form: form
+          human_description:
+            en_US: result_format
+            ja_JP: result_format
+            pt_BR: result_format
+            zh_Hans: 返回数据格式
+          label:
+            en_US: result_format
+            ja_JP: result_format
+            pt_BR: result_format
+            zh_Hans: 返回数据格式
+          llm_description: result_format
+          max: null
+          min: null
+          name: result_format
+          options:
+          - label:
+              en_US: JSON
+              ja_JP: JSON
+              pt_BR: JSON
+              zh_Hans: JSON
+            value: json
+          - label:
+              en_US: TEXT
+              ja_JP: TEXT
+              pt_BR: TEXT
+              zh_Hans: TEXT
+            value: text
+          - label:
+              en_US: CSV
+              ja_JP: CSV
+              pt_BR: CSV
+              zh_Hans: CSV
+            value: csv
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        params:
+          db_name: ''
+          db_type: ''
+          host: ''
+          password: ''
+          port: ''
+          result_format: ''
+          schema: ''
+          sql: ''
+          username: ''
+        provider_id: jaguarliuu/rookie_text2data/rookie_text2data
+        provider_name: jaguarliuu/rookie_text2data/rookie_text2data
+        provider_type: builtin
+        selected: false
+        title: 账龄分布查询
+        tool_configurations:
+          db_name: audit-pioneer
+          db_type: mysql
+          host: 121.43.233.12
+          password: 1qaz@WSX
+          port: 3408
+          result_format: json
+          username: root
+        tool_description: sql 执行器
+        tool_label: rookie_excute_sql
+        tool_name: rookie_excute_sql
+        tool_parameters:
+          schema:
+            type: mixed
+            value: ''
+          sql:
+            type: mixed
+            value: select  company_name, remark, rate from aging_detail where company_name
+              in {{#1752217546105.customers_str#}}
+        type: tool
+      height: 282
+      id: '17522173998220'
+      position:
+        x: 2526.3883647611938
+        y: -865.7706138443289
+      positionAbsolute:
+        x: 2526.3883647611938
+        y: -865.7706138443289
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "\ndef main(customers: list) -> dict:\n    return {\n        \"customers_str\"\
+          : \"(\" + \", \".join(f\"'{item}'\" for item in customers) + \")\",\n  \
+          \  }\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          customers_str:
+            children: null
+            type: string
+        selected: false
+        title: 客商参数->字符串
+        type: code
+        variables:
+        - value_selector:
+          - '1751688648757'
+          - customers
+          variable: customers
+      height: 54
+      id: '1752217546105'
+      position:
+        x: 2180.648469522622
+        y: -865.7706138443289
+      positionAbsolute:
+        x: 2180.648469522622
+        y: -865.7706138443289
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        items:
+        - input_type: constant
+          operation: set
+          value: 1
+          variable_selector:
+          - conversation
+          - latest_branch
+          write_mode: over-write
+        selected: false
+        title: 最近分支记录
+        type: assigner
+        version: '2'
+      height: 88
+      id: '1752377817644'
+      position:
+        x: 1091.4618456721164
+        y: -871.8562659470333
+      positionAbsolute:
+        x: 1091.4618456721164
+        y: -871.8562659470333
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        items:
+        - input_type: constant
+          operation: set
+          value: 3
+          variable_selector:
+          - conversation
+          - latest_branch
+          write_mode: over-write
+        selected: false
+        title: 最近分支记录
+        type: assigner
+        version: '2'
+      height: 88
+      id: '1752377890762'
+      position:
+        x: 1069.2102060797815
+        y: 862.0618457460325
+      positionAbsolute:
+        x: 1069.2102060797815
+        y: 862.0618457460325
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: -1910.4096587160932
+      y: 490.81849536435067
+      zoom: 0.7333146336367866
