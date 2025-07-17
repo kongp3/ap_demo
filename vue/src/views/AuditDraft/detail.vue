@@ -1,0 +1,285 @@
+<template>
+  <div class="draft-detail">
+    <!-- 基本信息 -->
+    <el-card class="section-card" shadow="never">
+      <div class="section-title">底稿基本信息</div>
+      <el-form :model="draftForm" label-width="120px" :disabled="isView">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="底稿名称" prop="draft_name">
+              <el-input v-model="draftForm.draft_name" placeholder="请输入底稿名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="被审计单位" prop="audit_unit">
+              <el-input v-model="draftForm.audit_unit" placeholder="请输入被审计单位" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="审计事项" prop="audit_items">
+              <el-select v-model="draftForm.audit_items" multiple placeholder="请选择审计事项">
+                <el-option v-for="item in allAuditItems" :key="item" :label="item" :value="item" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="取证人" prop="collector">
+              <el-input v-model="draftForm.collector" placeholder="请输入取证人" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="问题个数" prop="issue_num">
+              <el-input v-model="draftForm.issue_num" placeholder="请输入问题个数" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="创建日期" prop="create_time">
+              <el-date-picker v-model="draftForm.create_time" type="datetime" placeholder="请选择创建日期" style="width: 100%" value-format="YYYY-MM-DD HH:mm:ss" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="最后修改日期" prop="update_time">
+              <el-date-picker v-model="draftForm.update_time" type="datetime" placeholder="请选择最后修改日期" style="width: 100%" value-format="YYYY-MM-DD HH:mm:ss" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="风险模版" prop="risk_tpl">
+              <el-select v-model="draftForm.risk_tpl" placeholder="请选择风险模版">
+                <el-option v-for="item in riskTplOptions" :key="item" :label="item" :value="item" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-card>
+    <!-- 审计过程信息 -->
+    <el-card class="section-card" shadow="never" style="margin-top: 20px;">
+      <div class="section-title">审计过程信息</div>
+      <el-form :model="draftForm" label-width="120px" :disabled="isView">
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="审计过程" prop="process">
+              <el-input type="textarea" v-model="draftForm.process" :rows="6" placeholder="请输入审计过程" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="审计结论" prop="conclusion">
+              <el-input type="textarea" v-model="draftForm.conclusion" :rows="6" placeholder="请输入审计结论" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div class="section-title" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+        <span>审计问题</span>
+        <el-button v-if="!isView" type="primary" size="small" @click="handleAddIssue">添加问题</el-button>
+      </div>
+      <el-table :data="draftForm.customers" style="width: 100%; margin-top: 10px;">
+        <el-table-column type="index" label="序号" width="60" />
+        <el-table-column prop="issue_title" label="审计问题" min-width="200" />
+        <el-table-column prop="level" label="风险等级" width="100" />
+        <el-table-column prop="finder" label="问题发现人" width="160" />
+        <el-table-column label="操作" width="220" align="right">
+          <template #default="scope">
+            <el-button type="info" link @click="handleViewIssue(scope.row)">查看</el-button>
+            <el-button v-if="!isView" type="primary" link @click="handleEditIssue(scope.row)">修改</el-button>
+            <el-button v-if="!isView" type="danger" link @click="handleDeleteIssue(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+    <!-- 问题弹窗保持不变 -->
+    <el-dialog v-model="issueDialogVisible" :title="issueDialogTitle" width="800px" :close-on-click-modal="false">
+      <el-form :model="issueForm" label-width="120px" style="max-width: 700px" :disabled="issueDialogMode==='view'">
+        <el-form-item label="客商名称" prop="customer_name">
+          <el-input v-model="issueForm.customer_name" placeholder="请输入客商名称" />
+        </el-form-item>
+        <el-form-item label="风险等级" prop="level">
+          <el-select v-model="issueForm.level" placeholder="请选择风险等级">
+            <el-option label="高风险" value="高风险" />
+            <el-option label="中风险" value="中风险" />
+            <el-option label="低风险" value="低风险" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="问题标题" prop="issue_title">
+          <el-input v-model="issueForm.issue_title" placeholder="请输入问题标题" />
+        </el-form-item>
+        <el-form-item label="问题描述" prop="issue_desc">
+          <el-input type="textarea" v-model="issueForm.issue_desc" :rows="6" placeholder="请输入问题描述" />
+        </el-form-item>
+        <el-form-item label="审计建议" prop="suggest">
+          <el-input type="textarea" v-model="issueForm.suggest" :rows="6" placeholder="请输入审计建议" />
+        </el-form-item>
+        <el-form-item label="附件" prop="attach">
+          <div style="display: flex; justify-content: end; align-items: center; width: 100%;">
+            <el-upload
+              v-if="issueDialogMode !== 'view'"
+              :show-file-list="false"
+              :before-upload="handleIssueAttachUpload"
+            >
+              <el-button type="primary" size="small">上传附件</el-button>
+            </el-upload>
+          </div>
+          <el-table :data="issueForm.attach" style="width: 100%; margin-top: 8px;">
+            <el-table-column prop="filename" label="附件名称" min-width="120" />
+            <el-table-column prop="filesize" label="附件大小" width="100" />
+            <el-table-column prop="upload_time" label="上传时间" width="160" />
+            <el-table-column label="操作" width="160" align="right">
+              <template #default="scope">
+                <el-button type="primary" link @click="handleDownloadAttach(scope.row)">下载</el-button>
+                <el-button v-if="issueDialogMode !== 'view'" type="danger" link @click="handleDeleteAttach(scope.row)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="issueDialogVisible = false">取消</el-button>
+          <el-button v-if="issueDialogMode!=='view'" type="primary" @click="handleIssueSubmit">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { draftList } from './mock.js'
+import { ElMessage } from 'element-plus'
+
+const route = useRoute()
+const mode = ref(route.query.mode || 'add')
+const isView = computed(() => mode.value === 'view')
+
+const riskTplOptions = [
+  '客商综合分析',
+  '账龄综合分析',
+  '应收账款综合占比分析',
+  '周转率分析',
+  '坏账准备分析'
+]
+const allAuditItems = ['客商信息', '账龄分析', '应收账款综合占比']
+
+const draftForm = reactive({
+  draft_name: '',
+  audit_unit: '',
+  audit_items: [],
+  collector: '',
+  issue_num: 0,
+  create_time: '',
+  update_time: '',
+  risk_tpl: '',
+  process: '',
+  conclusion: '',
+  customers: []
+})
+
+const issueDialogVisible = ref(false)
+const issueDialogTitle = ref('')
+const issueDialogMode = ref('add') // add/edit/view
+const issueForm = reactive({
+  customer_name: '',
+  level: '',
+  issue_title: '',
+  issue_desc: '',
+  suggest: '',
+  finder: '',
+  attach: []
+})
+let currentIssueIndex = -1
+
+onMounted(() => {
+  if (route.query.draft_code) {
+    const draft = draftList.find(d => d.draft_code === route.query.draft_code)
+    if (draft) {
+      Object.assign(draftForm, draft)
+    }
+  }
+})
+
+function handleAddIssue() {
+  issueDialogTitle.value = '添加问题'
+  issueDialogMode.value = 'add'
+  resetIssueForm()
+  issueDialogVisible.value = true
+  currentIssueIndex = -1
+}
+function handleEditIssue(row) {
+  issueDialogTitle.value = '修改问题'
+  issueDialogMode.value = 'edit'
+  Object.assign(issueForm, row)
+  issueDialogVisible.value = true
+  currentIssueIndex = draftForm.customers.findIndex(i => i === row)
+}
+function handleViewIssue(row) {
+  issueDialogTitle.value = '问题详情'
+  issueDialogMode.value = 'view'
+  Object.assign(issueForm, row)
+  issueDialogVisible.value = true
+  currentIssueIndex = draftForm.customers.findIndex(i => i === row)
+}
+function handleDeleteIssue(row) {
+  const idx = draftForm.customers.findIndex(i => i === row)
+  if (idx > -1) draftForm.customers.splice(idx, 1)
+}
+function resetIssueForm() {
+  issueForm.customer_name = ''
+  issueForm.level = ''
+  issueForm.issue_title = ''
+  issueForm.issue_desc = ''
+  issueForm.suggest = ''
+  issueForm.attach = []
+}
+function handleIssueSubmit() {
+  if (issueDialogMode.value === 'add') {
+    draftForm.customers.push({ ...issueForm })
+  } else if (issueDialogMode.value === 'edit' && currentIssueIndex > -1) {
+    draftForm.customers[currentIssueIndex] = { ...issueForm }
+  }
+  issueDialogVisible.value = false
+}
+function handleIssueAttachUpload(file) {
+  issueForm.attach.push({
+    filename: file.name,
+    filesize: (file.size / 1024).toFixed(2) + 'KB', // 由B转为KB
+    upload_time: new Date().toISOString().slice(0, 19).replace('T', ' ')
+  })
+  return false // 阻止自动上传
+}
+function handleDeleteAttach(row) {
+  const idx = issueForm.attach.findIndex(f => f.filename === row.filename && f.upload_time === row.upload_time)
+  if (idx > -1) issueForm.attach.splice(idx, 1)
+}
+function handleDownloadAttach(row) {
+  // 模拟下载
+  ElMessage.info('模拟下载：' + row.filename)
+}
+</script>
+
+<style scoped>
+.draft-detail {
+  padding: 0;
+}
+.section-card {
+  margin-bottom: 16px;
+}
+.section-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+</style> 

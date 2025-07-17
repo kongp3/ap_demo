@@ -7,6 +7,7 @@ const routes = [
   { path: '/audit-plan', component: () => import('../views/AuditPlan/index.vue') },
   { path: '/audit-plan/detial', component: () => import('../views/AuditPlan/detial.vue') },
   { path: '/audit-draft', component: () => import('../views/AuditDraft/index.vue') },
+  { path: '/audit-draft/detail', component: () => import('../views/AuditDraft/detail.vue') },
   { path: '/report-setting', component: () => import('../views/ReportSetting/index.vue') },
   { path: '/document-archive', component: () => import('../views/DocumentArchive/index.vue') },
 ]
