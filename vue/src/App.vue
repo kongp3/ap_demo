@@ -19,6 +19,7 @@
         <el-aside width="220px" style="background: #304156; color: #bfcbd9; height: 100%;">
           <el-menu
             :default-active="activeMenu"
+            :default-openeds="openMenus"
             background-color="#304156"
             text-color="#bfcbd9"
             active-text-color="#409EFF"
@@ -72,7 +73,7 @@
   
         <!-- 主内容区 -->
         <el-main style="padding: 24px; background: #f5f7fa; width: 100%; height: 100%; overflow: auto;">
-          <el-card shadow="never" style="min-height: calc(100vh - 108px); border-radius: 8px; border: none; width: 100%;">
+          <el-card shadow="never" style="min-height: calc(100vh - 100px); border-radius: 8px; border: none; width: 100%;">
             <router-view />
           </el-card>
         </el-main>
@@ -81,7 +82,7 @@
   </template>
   
   <script setup>
-  import { ref, watch } from 'vue'
+  import { ref, watch, onMounted } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   import {
     Document,
@@ -98,6 +99,9 @@
   const route = useRoute()
   const activeMenu = ref(route.path || '/project-info')
   
+  // 展开的二级菜单index
+  const openMenus = ref(['1', '2', '3'])
+  
   // 监听路由变化，更新激活菜单
   watch(() => route.path, (newPath) => {
     activeMenu.value = newPath
@@ -107,6 +111,10 @@
     router.push(index)
     activeMenu.value = index
   }
+  
+  onMounted(() => {
+    openMenus.value = ['1', '2', '3']
+  })
   </script>
   
   <style>

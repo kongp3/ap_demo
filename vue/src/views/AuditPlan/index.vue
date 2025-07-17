@@ -1,9 +1,12 @@
 <template>
   <div class="audit-plan">
     <el-card class="search-card" shadow="never">
-      <el-form class="search-form" :model="searchForm" inline>
+      <el-form :model="searchForm" inline>
+        <el-form-item label="项目名称">
+          <el-input v-model="searchForm.project_name" placeholder="请输入项目名称" clearable style="width: 220px" />
+        </el-form-item>
         <el-form-item label="方案名称">
-          <el-input v-model="searchForm.plan_name" placeholder="请输入方案名称" clearable style="width: 300px" />
+          <el-input v-model="searchForm.plan_name" placeholder="请输入方案名称" clearable style="width: 220px" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -20,6 +23,7 @@
       </template>
       <el-table :data="pagedData" style="width: 100%" v-loading="loading">
         <el-table-column type="index" label="序号" width="60" />
+        <el-table-column prop="project_name" label="项目名称" min-width="180" />
         <el-table-column prop="plan_name" label="方案名称" min-width="200" />
         <el-table-column prop="date" label="编制日期" width="120" />
         <el-table-column label="审计事项清单" min-width="300">
@@ -66,13 +70,19 @@ import { auditPlanList } from './mock.js'
 
 const loading = ref(false)
 const tableData = ref([...auditPlanList])
-const searchForm = ref({ plan_name: '' })
+const searchForm = ref({ project_name: '', plan_name: '' })
 const currentPage = ref(1)
 const pageSize = ref(10)
 
 const filteredData = computed(() => {
-  if (!searchForm.value.plan_name) return tableData.value
-  return tableData.value.filter(item => item.plan_name.includes(searchForm.value.plan_name))
+  let data = tableData.value
+  if (searchForm.value.project_name) {
+    data = data.filter(item => item.project_name && item.project_name.includes(searchForm.value.project_name))
+  }
+  if (searchForm.value.plan_name) {
+    data = data.filter(item => item.plan_name && item.plan_name.includes(searchForm.value.plan_name))
+  }
+  return data
 })
 const pagedData = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value
@@ -109,6 +119,7 @@ function handleSearch() {
   currentPage.value = 1
 }
 function handleReset() {
+  searchForm.value.project_name = ''
   searchForm.value.plan_name = ''
   currentPage.value = 1
 }
@@ -136,9 +147,6 @@ function getAllLeafNodes(items) {
 .search-card {
   margin-bottom: 16px;
 }
-.search-form .el-form-item{
-    margin-bottom: 0;
-  }
 .list-card {
   margin-bottom: 16px;
 }

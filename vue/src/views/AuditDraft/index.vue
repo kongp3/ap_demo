@@ -2,6 +2,9 @@
   <div class="audit-draft">
     <el-card class="search-card" shadow="never">
       <el-form :model="searchForm" inline>
+        <el-form-item label="项目名称">
+          <el-input v-model="searchForm.project_name" placeholder="请输入项目名称" clearable style="width: 220px" />
+        </el-form-item>
         <el-form-item label="底稿名称">
           <el-input v-model="searchForm.draft_name" placeholder="请输入底稿名称" clearable style="width: 220px" />
         </el-form-item>
@@ -23,6 +26,7 @@
       </template>
       <el-table :data="pagedData" style="width: 100%" v-loading="loading">
         <el-table-column type="index" label="序号" width="60" />
+        <el-table-column prop="project_name" label="项目名称" min-width="180" />
         <el-table-column prop="draft_name" label="底稿名称" min-width="180" />
         <el-table-column prop="audit_unit" label="被审计单位" min-width="180" />
         <el-table-column prop="audit_items" label="审计事项" min-width="180">
@@ -30,9 +34,9 @@
             <el-tag v-for="item in scope.row.audit_items" :key="item" size="small" style="margin-right: 4px;">{{ item }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="collector" label="取证人" width="100" />
-        <el-table-column prop="issue_num" label="问题个数" width="100" />
-        <el-table-column prop="create_time" label="创建日期" width="160" />
+        <!-- <el-table-column prop="collector" label="取证人" width="100" /> -->
+        <!-- <el-table-column prop="issue_num" label="问题个数" width="100" /> -->
+        <!-- <el-table-column prop="create_time" label="创建日期" width="160" /> -->
         <el-table-column prop="update_time" label="最后修改日期" width="160" />
         <el-table-column label="操作" width="220" align="right">
           <template #default="scope">
@@ -64,17 +68,20 @@ import { draftList } from './mock.js'
 
 const loading = ref(false)
 const tableData = ref([...draftList])
-const searchForm = ref({ draft_name: '', audit_unit: '' })
+const searchForm = ref({ project_name: '', draft_name: '', audit_unit: '' })
 const currentPage = ref(1)
 const pageSize = ref(10)
 
 const filteredData = computed(() => {
   let data = tableData.value
+  if (searchForm.value.project_name) {
+    data = data.filter(item => item.project_name && item.project_name.includes(searchForm.value.project_name))
+  }
   if (searchForm.value.draft_name) {
-    data = data.filter(item => item.draft_name.includes(searchForm.value.draft_name))
+    data = data.filter(item => item.draft_name && item.draft_name.includes(searchForm.value.draft_name))
   }
   if (searchForm.value.audit_unit) {
-    data = data.filter(item => item.audit_unit.includes(searchForm.value.audit_unit))
+    data = data.filter(item => item.audit_unit && item.audit_unit.includes(searchForm.value.audit_unit))
   }
   return data
 })
@@ -113,6 +120,7 @@ function handleSearch() {
   currentPage.value = 1
 }
 function handleReset() {
+  searchForm.value.project_name = ''
   searchForm.value.draft_name = ''
   searchForm.value.audit_unit = ''
   currentPage.value = 1

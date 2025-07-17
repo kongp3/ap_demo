@@ -6,17 +6,22 @@
       <el-form :model="draftForm" label-width="120px" :disabled="isView">
         <el-row :gutter="20">
           <el-col :span="12">
+            <el-form-item label="项目名称" prop="project_name">
+              <el-input v-model="draftForm.project_name" placeholder="请输入项目名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="底稿名称" prop="draft_name">
               <el-input v-model="draftForm.draft_name" placeholder="请输入底稿名称" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="被审计单位" prop="audit_unit">
               <el-input v-model="draftForm.audit_unit" placeholder="请输入被审计单位" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="审计事项" prop="audit_items">
               <el-select v-model="draftForm.audit_items" multiple placeholder="请选择审计事项">
@@ -24,30 +29,32 @@
               </el-select>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="取证人" prop="collector">
               <el-input v-model="draftForm.collector" placeholder="请输入取证人" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="问题个数" prop="issue_num">
               <el-input v-model="draftForm.issue_num" placeholder="请输入问题个数" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="创建日期" prop="create_time">
               <el-date-picker v-model="draftForm.create_time" type="datetime" placeholder="请选择创建日期" style="width: 100%" value-format="YYYY-MM-DD HH:mm:ss" />
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="最后修改日期" prop="update_time">
               <el-date-picker v-model="draftForm.update_time" type="datetime" placeholder="请选择最后修改日期" style="width: 100%" value-format="YYYY-MM-DD HH:mm:ss" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="风险模版" prop="risk_tpl">
               <el-select v-model="draftForm.risk_tpl" placeholder="请选择风险模版">
@@ -170,6 +177,7 @@ const riskTplOptions = [
 const allAuditItems = ['客商信息', '账龄分析', '应收账款综合占比']
 
 const draftForm = reactive({
+  project_name: '',
   draft_name: '',
   audit_unit: '',
   audit_items: [],

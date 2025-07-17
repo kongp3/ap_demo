@@ -1,5 +1,16 @@
 <template>
   <div class="project-members">
+    <el-card class="search-card" shadow="never">
+      <el-form class="search-form" :model="searchForm" inline>
+        <el-form-item label="项目名称">
+          <el-input v-model="searchForm.project_name" placeholder="请输入项目名称" clearable style="width: 220px" />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+          <el-button @click="handleReset">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
     <el-card class="list-card" shadow="never">
       <template #header>
         <div class="card-header">
@@ -9,6 +20,7 @@
       </template>
       <el-table :data="pagedData" style="width: 100%" v-loading="loading">
         <el-table-column type="index" label="序号" width="60" />
+        <el-table-column prop="project_name" label="项目名称" min-width="180" />
         <el-table-column prop="username" label="成员姓名" min-width="120" />
         <el-table-column prop="role" label="项目角色" min-width="120" />
         <el-table-column prop="organization" label="所属审计机构" min-width="120" />
@@ -24,7 +36,7 @@
         <el-pagination
           background
           layout="prev, pager, next"
-          :total="tableData.length"
+          :total="filteredData.length"
           :page-size="pageSize"
           :current-page="currentPage"
           @current-change="handlePageChange"
@@ -36,16 +48,19 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="400px"
+      width="600px"
       :close-on-click-modal="false"
     >
       <el-form
         ref="formRef"
         :model="form"
         :rules="rules"
-        label-width="100px"
+        label-width="120px"
         class="dialog-form"
       >
+        <el-form-item label="项目名称" prop="project_name">
+          <el-input v-model="form.project_name" placeholder="请输入项目名称" :disabled="dialogMode==='view'" />
+        </el-form-item>
         <el-form-item label="成员姓名" prop="username">
           <el-select v-model="form.username" placeholder="请选择成员姓名" :disabled="dialogMode==='view'">
             <el-option v-for="item in userOptions" :key="item" :label="item" :value="item" />
@@ -75,9 +90,9 @@ import { ref, reactive, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const mockData = [
-  { code: '1', username: '张三', role: '项目组长', organization: '集团审计部' },
-  { code: '2', username: '李四', role: '项目主审', organization: 'A公司' },
-  { code: '3', username: '王五', role: '项目成员', organization: 'B公司' }
+  { code: '1', username: '张三', role: '项目组长', organization: '集团审计部', project_name: 'A公司“两金”专项审计' },
+  { code: '2', username: '李四', role: '项目主审', organization: 'A公司', project_name: 'A公司“两金”专项审计' },
+  { code: '3', username: '王五', role: '项目成员', organization: 'B公司', project_name: 'A公司“两金”专项审计' }
 ]
 
 const userOptions = ['张三', '李四', '王五', '赵六']
@@ -93,21 +108,40 @@ const formRef = ref()
 const form = reactive({
   username: '',
   role: '',
-  organization: ''
+  organization: '',
+  project_name: ''
 })
 const rules = {
   username: [ { required: true, message: '请选择成员姓名', trigger: 'change' } ],
   role: [ { required: true, message: '请选择项目角色', trigger: 'change' } ],
-  organization: [ { required: true, message: '请输入所属审计机构', trigger: 'blur' } ]
+  organization: [ { required: true, message: '请输入所属审计机构', trigger: 'blur' } ],
+  project_name: [ { required: true, message: '请输入项目名称', trigger: 'blur' } ]
+}
+
+const searchForm = ref({ project_name: '' })
+
+const filteredData = computed(() => {
+  let data = tableData.value
+  if (searchForm.value.project_name) {
+    data = data.filter(item => item.project_name.includes(searchForm.value.project_name))
+  }
+  return data
+})
+const pagedData = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  return filteredData.value.slice(start, start + pageSize.value)
+})
+function handleSearch() {
+  currentPage.value = 1
+}
+function handleReset() {
+  searchForm.value.project_name = ''
+  currentPage.value = 1
 }
 
 // 分页
 const currentPage = ref(1)
 const pageSize = ref(10)
-const pagedData = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  return tableData.value.slice(start, start + pageSize.value)
-})
 function handlePageChange(page) {
   currentPage.value = page
 }
@@ -149,6 +183,7 @@ function resetForm() {
   form.username = ''
   form.role = ''
   form.organization = ''
+  form.project_name = ''
   if (formRef.value) formRef.value.clearValidate()
 }
 async function handleSubmit() {
@@ -160,7 +195,8 @@ async function handleSubmit() {
         code: (tableData.value.length + 1).toString(),
         username: form.username,
         role: form.role,
-        organization: form.organization
+        organization: form.organization,
+        project_name: form.project_name
       })
       ElMessage.success('新增成功')
     } else if (dialogMode.value === 'edit') {
@@ -181,6 +217,12 @@ async function handleSubmit() {
 .project-members {
   padding: 0;
 }
+.search-card {
+  margin-bottom: 16px;
+}
+.search-form .el-form-item{
+    margin-bottom: 0;
+  }
 .list-card {
   margin-bottom: 16px;
 }

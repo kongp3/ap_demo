@@ -5,27 +5,36 @@
       <el-form :model="planForm" label-width="100px" :disabled="isView">
         <el-row :gutter="20">
           <el-col :span="12">
+            <el-form-item label="项目名称" prop="project_name">
+              <el-input v-model="planForm.project_name" placeholder="请输入项目名称" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
             <el-form-item label="方案名称" prop="plan_name">
               <el-input v-model="planForm.plan_name" placeholder="请输入方案名称" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="6">
             <el-form-item label="编制日期" prop="date">
               <el-date-picker v-model="planForm.date" type="date" placeholder="请选择编制日期" style="width: 100%" value-format="YYYY-MM-DD" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="24">
+          <el-col :span="12">
             <el-form-item label="编制依据" prop="source">
-              <el-input type="textarea" v-model="planForm.source" placeholder="请输入编制依据" :rows="4" />
+              <el-input type="textarea" v-model="planForm.source" placeholder="请输入编制依据" :rows="6" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
-          <el-col :span="24">
+          <el-col :span="12">
             <el-form-item label="备注" prop="remark">
-              <el-input type="textarea" v-model="planForm.remark" placeholder="请输入备注" :rows="4" />
+              <el-input type="textarea" v-model="planForm.remark" placeholder="请输入备注" :rows="6" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -58,7 +67,7 @@
         <el-col :span="20">
           <el-card v-if="currentLeaf" class="item-detail-card" shadow="never">
             <div class="section-title">事项详情</div>
-            <el-form :model="currentLeaf.details" label-width="120px" :disabled="isView">
+            <el-form :model="currentLeaf.details" label-width="180px" :disabled="isView">
               <el-form-item label="事项编号" prop="item_code">
                 <el-input v-model="currentLeaf.details.item_code" placeholder="请输入事项编号" />
               </el-form-item>
@@ -66,13 +75,13 @@
                 <el-input v-model="currentLeaf.details.item_name" placeholder="请输入事项名称" />
               </el-form-item>
               <el-form-item label="审计程序和方法" prop="method">
-                <el-input type="textarea" v-model="currentLeaf.details.method" placeholder="请输入审计程序和方法" :rows="2" />
+                <el-input type="textarea" v-model="currentLeaf.details.method" placeholder="请输入审计程序和方法" :rows="4" />
               </el-form-item>
               <el-form-item label="相关法律法规和监管规定" prop="source">
-                <el-input type="textarea" v-model="currentLeaf.details.source" placeholder="请输入相关法律法规和监管规定" :rows="2" />
+                <el-input type="textarea" v-model="currentLeaf.details.source" placeholder="请输入相关法律法规和监管规定" :rows="4" />
               </el-form-item>
               <el-form-item label="需提供材料" prop="material">
-                <el-input type="textarea" v-model="currentLeaf.details.material" placeholder="请输入需提供材料" :rows="2" />
+                <el-input type="textarea" v-model="currentLeaf.details.material" placeholder="请输入需提供材料" :rows="4" />
               </el-form-item>
             </el-form>
           </el-card>
@@ -120,6 +129,7 @@ const mode = ref(route.query.mode || 'add')
 const isView = computed(() => mode.value === 'view')
 
 const planForm = reactive({
+  project_name: '',
   plan_name: '',
   date: '',
   source: '',
@@ -151,6 +161,7 @@ onMounted(() => {
   if (route.query.plan_code) {
     const plan = auditPlanList.find(p => p.plan_code === route.query.plan_code)
     if (plan) {
+      planForm.project_name = plan.project_name
       planForm.plan_name = plan.plan_name
       planForm.date = plan.date
       planForm.source = plan.source
