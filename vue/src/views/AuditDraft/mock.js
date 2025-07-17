@@ -19,6 +19,7 @@ export const draftList = [{
             filesize: 111024,
             upload_time: "2025-02-03 12:00:00"
         }],
+        isReport: true, //是否入报告
         finder: "智能审计助理"// 问题发现人
     },{
         customer_name: "沈阳城市公用集团煤炭有限公司",
@@ -31,6 +32,7 @@ export const draftList = [{
             filesize: 111024,
             upload_time: "2025-02-03 12:00:00"
         }],
+        isReport: false, //是否入报告
         finder: "智能审计助理"// 问题发现人
     },{
         customer_name: "众泰汽车股份有限公司",
@@ -43,6 +45,7 @@ export const draftList = [{
             filesize: 111024,
             upload_time: "2025-02-03 12:00:00"
         }],
+        isReport: true, //是否入报告
         finder: "智能审计助理"// 问题发现人
     }]
 },{
@@ -66,6 +69,7 @@ export const draftList = [{
             filesize: 111024,
             upload_time: "2025-02-03 12:00:00"
         }],
+        isReport: true, //是否入报告
         finder: "智能审计助理"// 问题发现人
     },{
         customer_name: "沈阳城市公用集团煤炭有限公司",
@@ -78,6 +82,7 @@ export const draftList = [{
             filesize: 111024,
             upload_time: "2025-02-03 12:00:00"
         }],
+        isReport: false, //是否入报告
         finder: "智能审计助理"// 问题发现人
     },{
         customer_name: "众泰汽车股份有限公司",
@@ -90,6 +95,7 @@ export const draftList = [{
             filesize: 111024,
             upload_time: "2025-02-03 12:00:00"
         }],
+        isReport: false, //是否入报告
         finder: "智能审计助理"// 问题发现人
     }]
 },{
@@ -113,6 +119,7 @@ export const draftList = [{
             filesize: 111024,
             upload_time: "2025-02-03 12:00:00"
         }],
+        isReport: false, //是否入报告
         finder: "智能审计助理"// 问题发现人
     },{
         customer_name: "沈阳城市公用集团煤炭有限公司",
@@ -125,6 +132,7 @@ export const draftList = [{
             filesize: 111024,
             upload_time: "2025-02-03 12:00:00"
         }],
+        isReport: true, //是否入报告
         finder: "智能审计助理"// 问题发现人
     },{
         customer_name: "众泰汽车股份有限公司",
@@ -137,6 +145,7 @@ export const draftList = [{
             filesize: 111024,
             upload_time: "2025-02-03 12:00:00"
         }],
+        isReport: true, //是否入报告
         finder: "智能审计助理"// 问题发现人
     }]
 }]; 
