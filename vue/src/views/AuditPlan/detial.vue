@@ -1,5 +1,4 @@
 <template>
-  <el-button type="primary" @click="$router.back()" style="margin-bottom: 16px;">返回</el-button>
   <div class="plan-detail">
     <el-card class="section-card" shadow="never">
       <div class="section-title">基本信息</div>
@@ -7,7 +6,23 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="项目名称" prop="project_name">
-              <el-input v-model="planForm.project_name" placeholder="请输入项目名称" />
+              <el-select
+                v-model="planForm.project_name"
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入项目名称"
+                :remote-method="remoteProjectSearch"
+                :loading="projectLoading"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in projectOptions"
+                  :key="item.project_code"
+                  :label="item.project_name"
+                  :value="item.project_name"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -116,6 +131,10 @@
         </el-table-column>
       </el-table>
     </el-card>
+    <div class="footer-btns">
+      <el-button type="default" @click="$router.back()">返回</el-button>
+      <el-button type="primary" @click="handleSubmit">保存</el-button>
+    </div>
   </div>
 </template>
 
@@ -124,6 +143,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { auditPlanList } from './mock.js'
+import { projectList } from '../ProjectInfo/mock.js'
 
 const route = useRoute()
 const mode = ref(route.query.mode || 'add')
@@ -144,6 +164,20 @@ const currentLeaf = ref(null)
 
 // 附件列表
 const fileList = ref([])
+
+const projectOptions = ref([])
+const projectLoading = ref(false)
+function remoteProjectSearch(query) {
+  if (!query) {
+    projectOptions.value = projectList
+    return
+  }
+  projectLoading.value = true
+  setTimeout(() => {
+    projectOptions.value = projectList.filter(item => item.project_name.includes(query))
+    projectLoading.value = false
+  }, 300)
+}
 
 function getFirstLeaf(nodes) {
   if (!nodes) return null
@@ -268,5 +302,10 @@ function handleDownload(row) {
 }
 .item-detail-card {
   margin-left: 10px;
+}
+.footer-btns {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
 }
 </style> 

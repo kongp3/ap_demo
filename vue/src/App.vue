@@ -13,7 +13,7 @@
             width="1000"
             trigger="click"
             :show-arrow="false"
-            popper-style="margin-top: -2px; padding:0;box-shadow:0 2px 12px rgba(0,0,0,0.12);border-radius:12px;overflow:hidden;"
+            popper-style="margin-top: -2px; padding:0;box-shadow:0 2px 12px rgba(0,0,0,0.12);border-radius:12px;overflow:hidden; inset: 62px 0px auto auto;"
             v-model:visible="aiPopoverVisible"
           >
             <template #reference>

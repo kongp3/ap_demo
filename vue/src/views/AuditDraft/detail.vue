@@ -1,5 +1,4 @@
 <template>
-  <el-button type="primary" @click="$router.back()" style="margin-bottom: 16px;">返回</el-button>
   <div class="draft-detail">
     <!-- 基本信息 -->
     <el-card class="section-card" shadow="never">
@@ -8,7 +7,23 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="项目名称" prop="project_name">
-              <el-input v-model="draftForm.project_name" placeholder="请输入项目名称" />
+              <el-select
+                v-model="draftForm.project_name"
+                filterable
+                remote
+                reserve-keyword
+                placeholder="请输入项目名称"
+                :remote-method="remoteProjectSearch"
+                :loading="projectLoading"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in projectOptions"
+                  :key="item.project_code"
+                  :label="item.project_name"
+                  :value="item.project_name"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -19,17 +34,16 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
+            <el-form-item label="底稿编号" prop="audit_unit">
+              <el-input v-model="draftForm.draft_code" placeholder="请输入被审计单位" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="被审计单位" prop="audit_unit">
               <el-input v-model="draftForm.audit_unit" placeholder="请输入被审计单位" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="审计事项" prop="audit_items">
-              <el-select v-model="draftForm.audit_items" multiple placeholder="请选择审计事项">
-                <el-option v-for="item in allAuditItems" :key="item" :label="item" :value="item" />
-              </el-select>
-            </el-form-item>
-          </el-col>
+          
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
@@ -38,8 +52,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="问题个数" prop="issue_num">
-              <el-input v-model="draftForm.issue_num" placeholder="请输入问题个数" />
+            <el-form-item label="审计事项" prop="audit_items">
+              <el-select v-model="draftForm.audit_items" multiple placeholder="请选择审计事项">
+                <el-option v-for="item in allAuditItems" :key="item" :label="item" :value="item" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -57,6 +73,11 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
+            <el-form-item label="问题个数" prop="issue_num">
+              <el-input v-model="draftForm.issue_num" placeholder="请输入问题个数" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="风险模版" prop="risk_tpl">
               <el-select v-model="draftForm.risk_tpl" placeholder="请选择风险模版">
                 <el-option v-for="item in riskTplOptions" :key="item" :label="item" :value="item" />
@@ -73,14 +94,14 @@
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="审计过程" prop="process">
-              <el-input type="textarea" v-model="draftForm.process" :rows="6" placeholder="请输入审计过程" />
+              <el-input type="textarea" v-model="draftForm.process" :rows="8" placeholder="请输入审计过程" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="审计结论" prop="conclusion">
-              <el-input type="textarea" v-model="draftForm.conclusion" :rows="6" placeholder="请输入审计结论" />
+              <el-input type="textarea" v-model="draftForm.conclusion" :rows="8" placeholder="请输入审计结论" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -109,8 +130,8 @@
       </el-form>
     </el-card>
     <!-- 问题弹窗保持不变 -->
-    <el-dialog v-model="issueDialogVisible" :title="issueDialogTitle" width="800px" :close-on-click-modal="false">
-      <el-form :model="issueForm" label-width="120px" style="max-width: 700px" :disabled="issueDialogMode==='view'">
+    <el-dialog v-model="issueDialogVisible" :title="issueDialogTitle" width="1000px" :close-on-click-modal="false">
+      <el-form :model="issueForm" label-width="120px" style="max-width: 900px" :disabled="issueDialogMode==='view'">
         <el-form-item label="客商名称" prop="customer_name">
           <el-input v-model="issueForm.customer_name" placeholder="请输入客商名称" />
         </el-form-item>
@@ -143,8 +164,8 @@
           <el-table :data="issueForm.attach" style="width: 100%; margin-top: 8px;">
             <el-table-column prop="filename" label="附件名称" min-width="120" />
             <el-table-column prop="filesize" label="附件大小" width="100" />
-            <el-table-column prop="upload_time" label="上传时间" width="160" />
-            <el-table-column label="操作" width="160">
+            <el-table-column prop="upload_time" label="上传时间" width="200" />
+            <el-table-column label="操作" width="120">
               <template #default="scope">
                 <el-button type="primary" link @click="handleDownloadAttach(scope.row)">下载</el-button>
                 <el-button v-if="issueDialogMode !== 'view'" type="danger" link @click="handleDeleteAttach(scope.row)">删除</el-button>
@@ -161,16 +182,22 @@
       </template>
     </el-dialog>
   </div>
+  <div class="footer-btns">
+    <el-button type="default" @click="$router.back()">返回</el-button>
+    <el-button type="primary" @click="handleSubmit">保存</el-button>
+  </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, computed, onBeforeUnmount, onActivated, onDeactivated } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { draftList } from './mock.js'
 import { ElMessage } from 'element-plus'
 import { fetchDraftInfo, fetchAuditProcess, fetchAuditDetailById } from '@/api/auditDraftApi'
+import { projectList } from '../ProjectInfo/mock.js'
 
 const route = useRoute()
+const router = useRouter()
 const mode = ref(route.query.mode || 'add')
 const isView = computed(() => mode.value === 'view')
 
@@ -212,6 +239,20 @@ const issueForm = reactive({
 })
 let currentIssueIndex = -1
 
+const projectOptions = ref([])
+const projectLoading = ref(false)
+function remoteProjectSearch(query) {
+  if (!query) {
+    projectOptions.value = projectList
+    return
+  }
+  projectLoading.value = true
+  setTimeout(() => {
+    projectOptions.value = projectList.filter(item => item.project_name.includes(query))
+    projectLoading.value = false
+  }, 300)
+}
+
 // 监听AI助手关闭事件，mode=add时自动拉取接口数据
 function handleAIPopoverClose() {
   console.log('AI助手关闭事件触发', mode.value, route.fullPath)
@@ -240,6 +281,7 @@ async function loadDraftInfoFromApi() {
     const { data } = await fetchDraftInfo()
     draftForm.project_name = data.project_name || ''
     draftForm.draft_name = data.name || ''
+    draftForm.draft_code = data.code || ''
     draftForm.audit_unit = data.company_name || ''
     draftForm.audit_items = data.focus ? [data.focus] : []
     draftForm.collector = data.operator || ''
@@ -260,7 +302,7 @@ async function loadAuditProcessFromApi() {
     draftForm.customers = (data.customer || []).map(item => ({
       ...item,
       issue_title: (item.customer_name ? item.customer_name + ' - ' : '') + (item.title || ''),
-      finder: '',
+      finder: 'AI审计助手',
       attach: []
     }))
     draftForm.issue_num = draftForm.customers.length
@@ -354,6 +396,19 @@ async function loadAuditDetailFromApi(detail_id) {
     ElMessage.error('审计问题详情接口请求失败')
   }
 }
+
+function handleSubmit() {
+  // 保存到localStorage
+  const newDraft = { ...draftForm }
+  let localDrafts = JSON.parse(localStorage.getItem('draftList') || '[]')
+  // 避免重复添加
+  if (!localDrafts.find(d => d.draft_code === newDraft.draft_code)) {
+    localDrafts.push(newDraft)
+    localStorage.setItem('draftList', JSON.stringify(localDrafts))
+  }
+  // 返回index页面
+  router.push({ path: '/audit-draft' })
+}
 </script>
 
 <style scoped>
@@ -372,5 +427,10 @@ async function loadAuditDetailFromApi(detail_id) {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+.footer-btns {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
 }
 </style> 
