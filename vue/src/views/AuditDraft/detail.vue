@@ -163,10 +163,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, onBeforeUnmount, onActivated, onDeactivated } from 'vue'
 import { useRoute } from 'vue-router'
 import { draftList } from './mock.js'
 import { ElMessage } from 'element-plus'
+import { fetchDraftInfo, fetchAuditProcess, fetchAuditDetailById } from '@/api/auditDraftApi'
 
 const route = useRoute()
 const mode = ref(route.query.mode || 'add')
@@ -210,14 +211,62 @@ const issueForm = reactive({
 })
 let currentIssueIndex = -1
 
-onMounted(() => {
-  if (route.query.draft_code) {
-    const draft = draftList.find(d => d.draft_code === route.query.draft_code)
-    if (draft) {
-      Object.assign(draftForm, draft)
-    }
+// 监听AI助手关闭事件，mode=add时自动拉取接口数据
+function handleAIPopoverClose() {
+  console.log('AI助手关闭事件触发', mode.value, route.fullPath)
+  if (mode.value === 'add') {
+    loadDraftInfoFromApi()
+    loadAuditProcessFromApi()
   }
+}
+
+onMounted(() => {
+  window.addEventListener('ai-popover-close', handleAIPopoverClose)
 })
+onBeforeUnmount(() => {
+  window.removeEventListener('ai-popover-close', handleAIPopoverClose)
+})
+onActivated(() => {
+  window.addEventListener('ai-popover-close', handleAIPopoverClose)
+})
+onDeactivated(() => {
+  window.removeEventListener('ai-popover-close', handleAIPopoverClose)
+})
+
+// 拉取底稿基本信息
+async function loadDraftInfoFromApi() {
+  try {
+    const { data } = await fetchDraftInfo()
+    // draftForm.project_name = data.project_name || ''
+    draftForm.draft_name = data.name || ''
+    draftForm.audit_unit = data.company_name || ''
+    draftForm.audit_items = data.focus ? [data.focus] : []
+    draftForm.collector = data.operator || ''
+    draftForm.create_time = data.create_date || ''
+    draftForm.update_time = data.update_date || ''
+    draftForm.risk_tpl = data.model || ''
+    draftForm.issue_num = 0
+  } catch (e) {
+    ElMessage.error('底稿信息接口请求失败')
+  }
+}
+// 拉取审计过程信息
+async function loadAuditProcessFromApi() {
+  try {
+    const { data } = await fetchAuditProcess()
+    draftForm.process = data.process || ''
+    draftForm.conclusion = data.conclusion || ''
+    draftForm.customers = (data.customer || []).map(item => ({
+      ...item,
+      issue_title: (item.customer_name ? item.customer_name + ' - ' : '') + (item.title || ''),
+      finder: '',
+      attach: []
+    }))
+    draftForm.issue_num = draftForm.customers.length
+  } catch (e) {
+    ElMessage.error('审计过程接口请求失败')
+  }
+}
 
 function handleAddIssue() {
   issueDialogTitle.value = '添加问题'
@@ -226,17 +275,25 @@ function handleAddIssue() {
   issueDialogVisible.value = true
   currentIssueIndex = -1
 }
-function handleEditIssue(row) {
+async function handleEditIssue(row) {
   issueDialogTitle.value = '修改问题'
   issueDialogMode.value = 'edit'
-  Object.assign(issueForm, row)
+  if (mode.value === 'add' && row.detail_id) {
+    await loadAuditDetailFromApi(row.detail_id)
+  } else {
+    Object.assign(issueForm, row)
+  }
   issueDialogVisible.value = true
   currentIssueIndex = draftForm.customers.findIndex(i => i === row)
 }
-function handleViewIssue(row) {
+async function handleViewIssue(row) {
   issueDialogTitle.value = '问题详情'
   issueDialogMode.value = 'view'
-  Object.assign(issueForm, row)
+  if (mode.value === 'add' && row.detail_id) {
+    await loadAuditDetailFromApi(row.detail_id)
+  } else {
+    Object.assign(issueForm, row)
+  }
   issueDialogVisible.value = true
   currentIssueIndex = draftForm.customers.findIndex(i => i === row)
 }
@@ -275,6 +332,26 @@ function handleDeleteAttach(row) {
 function handleDownloadAttach(row) {
   // 模拟下载
   ElMessage.info('模拟下载：' + row.filename)
+}
+
+// 拉取审计问题详情
+async function loadAuditDetailFromApi(detail_id) {
+  try {
+    const { data } = await fetchAuditDetailById(detail_id)
+    issueForm.customer_name = data.customer_name || ''
+    issueForm.level = data.level || ''
+    issueForm.issue_title = data.title || ''
+    issueForm.issue_desc = data.desc || ''
+    issueForm.suggest = data.suggest || ''
+    issueForm.attach = (data.attach || []).map(a => ({
+      filename: a.name,
+      filesize: a.filesize,
+      upload_time: a.dateTime,
+      url: a.url
+    }))
+  } catch (e) {
+    ElMessage.error('审计问题详情接口请求失败')
+  }
 }
 </script>
 

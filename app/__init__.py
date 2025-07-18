@@ -5,6 +5,7 @@ from app.controller.main_controller import main_bp
 from app.controller.draft_controller import draft_bp
 from app.util.database import engine, Base
 from config import Config
+from flask_cors import CORS
 
 
 def create_app():
@@ -21,5 +22,8 @@ def create_app():
     app.register_blueprint(main_bp)
     app.register_blueprint(audit_bp)
     app.register_blueprint(draft_bp)
+
+    # 全局允许跨域
+    CORS(app, supports_credentials=True)
 
     return app

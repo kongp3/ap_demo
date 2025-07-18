@@ -38,7 +38,7 @@
         <!-- <el-table-column prop="issue_num" label="问题个数" width="100" /> -->
         <!-- <el-table-column prop="create_time" label="创建日期" width="160" /> -->
         <el-table-column prop="update_time" label="最后修改日期" width="160" />
-        <el-table-column label="操作" width="220" align="right">
+        <el-table-column label="操作" width="220">
           <template #default="scope">
             <el-button type="info" link @click="handleView(scope.row)">查看</el-button>
             <el-button type="primary" link @click="handleEdit(scope.row)">修改</el-button>

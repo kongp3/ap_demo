@@ -14,6 +14,7 @@
             trigger="click"
             :show-arrow="false"
             popper-style="margin-top: -2px; padding:0;box-shadow:0 2px 12px rgba(0,0,0,0.12);border-radius:12px;overflow:hidden;"
+            v-model:visible="aiPopoverVisible"
           >
             <template #reference>
               <el-button circle size="large" style="background:rgba(255,255,255,0.15);border:none;font-size:22px;">
@@ -137,7 +138,7 @@
   const openMenus = ref(['1', '2', '3'])
 
   // Dify 聊天机器人弹窗显示状态
-  // const difyVisible = ref(false)
+  const aiPopoverVisible = ref(false)
   
   // 随机头像生成（使用 https://api.dicebear.com/）
   const avatarUrl = `https://api.dicebear.com/7.x/identicon/svg?seed=wxshj9e8k6`
@@ -154,6 +155,12 @@
   
   onMounted(() => {
     openMenus.value = ['1', '2', '3']
+  })
+
+  watch(aiPopoverVisible, (val) => {
+    if (!val) {
+      window.dispatchEvent(new Event('ai-popover-close'))
+    }
   })
   </script>
   
