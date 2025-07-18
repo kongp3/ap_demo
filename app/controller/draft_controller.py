@@ -67,8 +67,8 @@ def query_draft():
             "draft_id": draft.draft_id,
             "source": draft.source,
             "model": draft.model,
-            "create_date": draft.create_time.strftime("%Y-%m-%d"),
-            "update_date": draft.update_time.strftime("%Y-%m-%d")
+            "create_date": draft.create_time.strftime("%Y-%m-%d %H:%M:%S"),
+            "update_date": draft.update_time.strftime("%Y-%m-%d %H:%M:%S")
         }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -101,8 +101,8 @@ def draft_detail(draft_id):
             "operator": main_draft.operator,
             "source": main_draft.source,
             "model": main_draft.model,
-            "create_time": main_draft.create_time.isoformat(),
-            "update_time": main_draft.update_time.isoformat()
+            "create_time": main_draft.create_time.strftime("%Y-%m-%d %H:%M:%S"),
+            "update_time": main_draft.update_time.strftime("%Y-%m-%d %H:%M:%S")
         }
 
         # 格式化引用的底稿

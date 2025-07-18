@@ -190,7 +190,7 @@ def get_customer_detail(db: Session, detail_id: int):
             "name": attach.name,
             "url": attach.url,
             "filesize": attach.filesize,
-            "dateTime": attach.date_time.isoformat() if attach.date_time else None
+            "dateTime": attach.date_time.strftime("%Y-%m-%d %H:%M:%S") if attach.date_time else None
         })
 
     return {
