@@ -2,16 +2,41 @@
     <el-container style="height: 100vh; width: 100%;">
       <!-- 顶部导航栏 -->
       <el-header style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-        <h2 style="margin: 0; font-weight: 600; font-size: 20px;">智能审计系统</h2>
-        <el-dropdown>
-          <el-avatar :size="32" src="https://cube.elemecdn.com/0/88/03b0d395834826768a7534e55.png" />
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item>个人中心</el-dropdown-item>
-              <el-dropdown-item>退出登录</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+        <h2 style="margin: 0; font-weight: 600; font-size: 20px; display: flex; align-items: center; gap: 10px;">
+          <img :src="shenjilogo" alt="logo" style="height:32px;vertical-align:middle;" />
+          智能审计系统
+        </h2>
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <!-- Dify 聊天机器人入口 -->
+          <el-popover
+            placement="bottom-end"
+            width="1000"
+            trigger="click"
+            :show-arrow="false"
+            popper-style="margin-top: -2px; padding:0;box-shadow:0 2px 12px rgba(0,0,0,0.12);border-radius:12px;overflow:hidden;"
+          >
+            <template #reference>
+              <el-button circle size="large" style="background:rgba(255,255,255,0.15);border:none;font-size:22px;">
+                🤖
+              </el-button>
+            </template>
+            <iframe
+              src="http://121.43.233.12/chatbot/mpqT0yUa43BmDT3M"
+              style="width: 1000px; height: calc(100vh - 90px); min-height: 400px; border: none; border-radius: 12px; margin: -8px 0;"
+              frameborder="0"
+              allow="microphone"
+            ></iframe>
+          </el-popover>
+          <el-dropdown>
+            <el-avatar :size="32" :src="avatarUrl" />
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>个人中心</el-dropdown-item>
+                <el-dropdown-item>退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
       </el-header>
   
       <el-container style="height: calc(100vh - 60px);">
@@ -73,7 +98,7 @@
   
         <el-container>
           <!-- 主内容区 -->
-          <el-main style="padding: 24px 24px 40px 24px; background: #f5f7fa; width: 100%; height: 100%; overflow: auto;">
+          <el-main style="background: #f5f7fa; width: 100%; height: 100%; overflow: auto;">
             <el-card shadow="never" style="min-height: calc(100vh - 146px); border-radius: 8px; border: none; width: 100%;">
               <router-view />
             </el-card>
@@ -92,6 +117,7 @@
   <script setup>
   import { ref, watch, onMounted } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
+  import shenjilogo from './assets/shenjilogo.png'
   import {
     Document,
     InfoFilled,
@@ -109,6 +135,12 @@
   
   // 展开的二级菜单index
   const openMenus = ref(['1', '2', '3'])
+
+  // Dify 聊天机器人弹窗显示状态
+  // const difyVisible = ref(false)
+  
+  // 随机头像生成（使用 https://api.dicebear.com/）
+  const avatarUrl = `https://api.dicebear.com/7.x/identicon/svg?seed=wxshj9e8k6`
   
   // 监听路由变化，更新激活菜单
   watch(() => route.path, (newPath) => {
@@ -138,3 +170,13 @@
     box-sizing: border-box;
   }
   </style>
+
+<style>
+.el-popover__content {
+  padding: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+</style>
