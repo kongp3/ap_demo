@@ -83,24 +83,29 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24" style="display: flex; justify-content: end; align-items: center; margin-top: 20px;"> 
+            <el-button v-if="!isView" type="primary" size="small" @click="handleAddIssue">添加问题</el-button>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="审计问题" prop="conclusion">
+              <el-table :data="draftForm.customers" style="width: 100%; margin-top: 10px;">
+                <el-table-column type="index" label="序号" width="60" />
+                <el-table-column prop="issue_title" label="审计问题" min-width="200" />
+                <el-table-column prop="level" label="风险等级" width="100" />
+                <el-table-column prop="finder" label="问题发现人" width="160" />
+                <el-table-column label="操作" width="220">
+                  <template #default="scope">
+                    <el-button type="info" link @click="handleViewIssue(scope.row)">查看</el-button>
+                    <el-button v-if="!isView" type="primary" link @click="handleEditIssue(scope.row)">修改</el-button>
+                    <el-button v-if="!isView" type="danger" link @click="handleDeleteIssue(scope.row)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
-      <div class="section-title" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-        <span>审计问题</span>
-        <el-button v-if="!isView" type="primary" size="small" @click="handleAddIssue">添加问题</el-button>
-      </div>
-      <el-table :data="draftForm.customers" style="width: 100%; margin-top: 10px;">
-        <el-table-column type="index" label="序号" width="60" />
-        <el-table-column prop="issue_title" label="审计问题" min-width="200" />
-        <el-table-column prop="level" label="风险等级" width="100" />
-        <el-table-column prop="finder" label="问题发现人" width="160" />
-        <el-table-column label="操作" width="220" align="right">
-          <template #default="scope">
-            <el-button type="info" link @click="handleViewIssue(scope.row)">查看</el-button>
-            <el-button v-if="!isView" type="primary" link @click="handleEditIssue(scope.row)">修改</el-button>
-            <el-button v-if="!isView" type="danger" link @click="handleDeleteIssue(scope.row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
     </el-card>
     <!-- 问题弹窗保持不变 -->
     <el-dialog v-model="issueDialogVisible" :title="issueDialogTitle" width="800px" :close-on-click-modal="false">
