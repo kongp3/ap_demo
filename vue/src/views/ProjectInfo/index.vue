@@ -1,5 +1,6 @@
 <template>
     <div class="project-info">
+      <ProjectBreadcrumb :main="'审计准备'" :sub="'项目信息'" projectless />
       <!-- 搜索区域 -->
       <el-card class="search-card" shadow="never">
         <el-form class="search-form" :model="searchForm" inline>
@@ -53,8 +54,9 @@
           <el-table-column prop="type" label="项目类型" width="100" />
           <el-table-column prop="organization" label="审计机构" width="120" />
           <el-table-column prop="leader" label="项目负责人" width="120" />
-          <el-table-column label="操作" width="150" align="right">
+          <el-table-column label="操作" width="150">
             <template #default="scope">
+              <el-button type="info" link @click="handleView(scope.row)">查看</el-button>
               <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
               <el-button type="danger" link @click="handleDelete(scope.row)">删除</el-button>
             </template>
@@ -170,6 +172,82 @@
           </span>
         </template>
       </el-dialog>
+  
+      <!-- 查看弹窗 -->
+      <el-dialog v-model="viewDialogVisible" title="项目信息查看" width="60%" :close-on-click-modal="false">
+        <el-form :model="viewData" label-width="120px" class="dialog-form" disabled>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="项目编号" prop="project_code">
+                <el-input v-model="viewData.project_code" disabled />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="项目状态" prop="state">
+                <el-input v-model="viewData.state" disabled />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="24">
+              <el-form-item label="项目名称" prop="project_name">
+                <el-input v-model="viewData.project_name" disabled />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="项目类型" prop="type">
+                <el-input v-model="viewData.type" disabled />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="审计机构" prop="organization">
+                <el-input v-model="viewData.organization" disabled />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="项目负责人" prop="leader">
+                <el-input v-model="viewData.leader" disabled />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="项目年度" prop="year">
+                <el-input v-model="viewData.year" disabled />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="被审计单位" prop="audit_unit">
+                <el-input v-model="viewData.audit_unit" disabled />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="备注" prop="remark">
+                <el-input v-model="viewData.remark" disabled />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="开始日期" prop="start_date">
+                <el-input v-model="viewData.start_date" disabled />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="结束日期" prop="end_date">
+                <el-input v-model="viewData.end_date" disabled />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <template #footer>
+          <el-button @click="viewDialogVisible = false">关闭</el-button>
+        </template>
+      </el-dialog>
     </div>
   </template>
   
@@ -177,7 +255,7 @@
   import { ref, reactive, computed, onMounted } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { projectList } from './mock.js'
-
+  import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
   
   // Mock数据
   const mockData = projectList
@@ -219,6 +297,8 @@
   const dialogTitle = ref('新增项目')
   const isEdit = ref(false)
   const currentId = ref('')
+  const viewDialogVisible = ref(false)
+  const viewData = ref({})
   
   const searchForm = reactive({
     project_code: '',
@@ -345,6 +425,11 @@
     currentId.value = row.project_code
     Object.assign(form, row)
     dialogVisible.value = true
+  }
+
+  function handleView(row) {
+    viewData.value = { ...row }
+    viewDialogVisible.value = true
   }
   
   const handleDelete = (row) => {

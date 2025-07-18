@@ -1,4 +1,5 @@
 <template>
+  <el-button type="primary" @click="$router.back()" style="margin-bottom: 16px;">返回</el-button>
   <div class="plan-detail">
     <el-card class="section-card" shadow="never">
       <div class="section-title">基本信息</div>
@@ -107,7 +108,7 @@
         <el-table-column prop="size" label="附件大小" width="100" />
         <el-table-column prop="creator" label="创建人" width="100" />
         <el-table-column prop="create_time" label="创建时间" width="160" />
-        <el-table-column label="操作" width="180" align="right">
+        <el-table-column label="操作" width="180">
           <template #default="scope">
             <el-button type="primary" link @click="handleDownload(scope.row)">下载</el-button>
             <el-button v-if="!isView" type="danger" link @click="handleRemoveFile(scope.row)">删除</el-button>

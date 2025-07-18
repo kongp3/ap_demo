@@ -1,10 +1,8 @@
 <template>
   <div class="audit-plan">
+    <ProjectBreadcrumb :main="'审计准备'" :sub="'审计方案'" @project-change="onProjectChange" />
     <el-card class="search-card" shadow="never">
       <el-form :model="searchForm" inline>
-        <el-form-item label="项目名称">
-          <el-input v-model="searchForm.project_name" placeholder="请输入项目名称" clearable style="width: 220px" />
-        </el-form-item>
         <el-form-item label="方案名称">
           <el-input v-model="searchForm.plan_name" placeholder="请输入方案名称" clearable style="width: 220px" />
         </el-form-item>
@@ -40,10 +38,10 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="220" align="right">
+        <el-table-column label="操作" width="220">
           <template #default="scope">
             <el-button type="info" link @click="handleView(scope.row)">查看</el-button>
-            <el-button type="primary" link @click="handleEdit(scope.row)">修改</el-button>
+            <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="danger" link @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -63,22 +61,21 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { auditPlanList } from './mock.js'
+import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
 
 const loading = ref(false)
 const tableData = ref([...auditPlanList])
 const searchForm = ref({ project_name: '', plan_name: '' })
 const currentPage = ref(1)
 const pageSize = ref(10)
+const currentProject = ref({})
 
 const filteredData = computed(() => {
   let data = tableData.value
-  if (searchForm.value.project_name) {
-    data = data.filter(item => item.project_name && item.project_name.includes(searchForm.value.project_name))
-  }
   if (searchForm.value.plan_name) {
     data = data.filter(item => item.plan_name && item.plan_name.includes(searchForm.value.plan_name))
   }
@@ -89,6 +86,26 @@ const pagedData = computed(() => {
   return filteredData.value.slice(start, start + pageSize.value)
 })
 const router = useRouter()
+
+function onProjectChange(project) {
+  currentProject.value = project
+  filterTableData()
+}
+
+function filterTableData() {
+  if (!currentProject.value.project_name) {
+    tableData.value = []
+    return
+  }
+  tableData.value = auditPlanList.filter(item => item.project_name === currentProject.value.project_name)
+}
+
+onMounted(() => {
+  if (auditPlanList.length > 0) {
+    currentProject.value = auditPlanList[0]
+    filterTableData()
+  }
+})
 
 function handleAdd() {
   router.push({ path: '/audit-plan/detial', query: { mode: 'add' } })
@@ -117,11 +134,12 @@ function handlePageChange(page) {
 }
 function handleSearch() {
   currentPage.value = 1
+  filterTableData()
 }
 function handleReset() {
-  searchForm.value.project_name = ''
   searchForm.value.plan_name = ''
   currentPage.value = 1
+  filterTableData()
 }
 function getAllLeafNodes(items) {
   const result = []

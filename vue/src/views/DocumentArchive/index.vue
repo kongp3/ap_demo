@@ -1,26 +1,12 @@
 <template>
   <div class="document-archive">
-    <el-card class="search-card" shadow="never">
-      <el-form class="search-form" :model="searchForm" inline>
-        <el-form-item label="项目名称">
-          <el-select v-model="searchForm.project_name" placeholder="请选择项目名称" clearable style="width: 500px">
-            <el-option v-for="item in projectNames" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="success" @click="handleInit">初始化归档模版</el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
+    <ProjectBreadcrumb :main="'审计终结'" :sub="'文书归档'" @project-change="onProjectChange" />
     <el-card class="list-card" shadow="never">
       <template #header>
         <div class="card-header">
           <span>文档列表</span>
           <div>
+            <el-button type="success" @click="handleInit">初始化归档模版</el-button>
             <el-button type="primary" @click="setArchive('已归档')" :disabled="!multipleSelection.length">归档确认</el-button>
             <el-button type="warning" @click="setArchive('未归档')" :disabled="!multipleSelection.length">撤销归档</el-button>
           </div>
@@ -87,11 +73,33 @@ import { ElMessage } from 'element-plus'
 import { archiveList } from './mock.js'
 import { modelList } from './model.js'
 import { projectList } from '../ProjectInfo/mock.js'
+import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
 
 const loading = ref(false)
 const allArchiveData = ref([...archiveList])
 const searchForm = ref({ project_name: '' })
 const multipleSelection = ref([])
+const currentProject = ref({})
+
+function onProjectChange(project) {
+  currentProject.value = project
+  filterTableData()
+}
+
+function filterTableData() {
+  if (!currentProject.value.project_name) {
+    allArchiveData.value = []
+    return
+  }
+  allArchiveData.value = archiveList.filter(item => item.project_name === currentProject.value.project_name)
+}
+
+onMounted(() => {
+  if (archiveList.length > 0) {
+    currentProject.value = archiveList[0]
+    filterTableData()
+  }
+})
 
 const projectNames = computed(() => {
   return Array.from(new Set((projectList || []).map(item => item.project_name).filter(Boolean)))
@@ -99,7 +107,7 @@ const projectNames = computed(() => {
 
 // 当前选中项目的文档列表
 const currentProjectDocs = computed(() => {
-  const item = allArchiveData.value.find(i => i.project_name === searchForm.value.project_name)
+  const item = allArchiveData.value.find(i => i.project_name === currentProject.value.project_name)
   if (item) {
     // 给每个文档加上 project_name 字段，方便后续操作
     return item.documents.map(doc => ({ ...doc, project_name: item.project_name }))
@@ -107,17 +115,11 @@ const currentProjectDocs = computed(() => {
   return []
 })
 
-onMounted(() => {
-  if (projectNames.value.length > 0) {
-    searchForm.value.project_name = projectNames.value[0]
-  }
-})
-
 function handleSelectionChange(val) {
   multipleSelection.value = val
 }
 function setArchive(status) {
-  const item = allArchiveData.value.find(i => i.project_name === searchForm.value.project_name)
+  const item = allArchiveData.value.find(i => i.project_name === currentProject.value.project_name)
   if (item) {
     multipleSelection.value.forEach(row => {
       const doc = item.documents.find(d => d.stage === row.stage && d.type === row.type)
@@ -127,7 +129,7 @@ function setArchive(status) {
   }
 }
 function handleUpload(row, file) {
-  const item = allArchiveData.value.find(i => i.project_name === searchForm.value.project_name)
+  const item = allArchiveData.value.find(i => i.project_name === currentProject.value.project_name)
   if (item) {
     const doc = item.documents.find(d => d.stage === row.stage && d.type === row.type)
     if (doc) doc.attach = file.name
@@ -136,7 +138,7 @@ function handleUpload(row, file) {
   return false // 阻止自动上传
 }
 function handleDelete(row) {
-  const item = allArchiveData.value.find(i => i.project_name === searchForm.value.project_name)
+  const item = allArchiveData.value.find(i => i.project_name === currentProject.value.project_name)
   if (item) {
     const idx = item.documents.findIndex(d => d.stage === row.stage && d.type === row.type)
     if (idx > -1) item.documents.splice(idx, 1)
@@ -145,7 +147,7 @@ function handleDelete(row) {
 }
 // 新增清空操作
 function handleClear(row) {
-  const item = allArchiveData.value.find(i => i.project_name === searchForm.value.project_name)
+  const item = allArchiveData.value.find(i => i.project_name === currentProject.value.project_name)
   if (item) {
     const doc = item.documents.find(d => d.stage === row.stage && d.type === row.type)
     if (doc) doc.attach = ''
@@ -166,23 +168,25 @@ function handleDownload(row) {
   }
 }
 function handleSearch() {
-  // 只需切换project_name即可，currentProjectDocs会自动更新
+  multipleSelection.value = []
+  filterTableData()
 }
 function handleReset() {
-  searchForm.value.project_name = projectNames.value[0] || ''
+  multipleSelection.value = []
+  filterTableData()
 }
 function handleInit() {
-  if (!searchForm.value.project_name) {
+  if (!currentProject.value.project_name) {
     ElMessage.warning('请先选择项目名称')
     return
   }
   const newDocs = modelList.map(item => ({ ...item, state: '未归档' }))
-  const idx = allArchiveData.value.findIndex(item => item.project_name === searchForm.value.project_name)
+  const idx = allArchiveData.value.findIndex(item => item.project_name === currentProject.value.project_name)
   if (idx > -1) {
     allArchiveData.value[idx].documents = newDocs
   } else {
     allArchiveData.value.push({
-      project_name: searchForm.value.project_name,
+      project_name: currentProject.value.project_name,
       documents: newDocs
     })
   }
@@ -213,7 +217,7 @@ function tableSpanMethod({ row, column, rowIndex }) {
 }
 // 新增归档/撤销归档操作
 function handleArchive(row) {
-  const item = allArchiveData.value.find(i => i.project_name === searchForm.value.project_name)
+  const item = allArchiveData.value.find(i => i.project_name === currentProject.value.project_name)
   if (item) {
     const doc = item.documents.find(d => d.stage === row.stage && d.type === row.type)
     if (doc) doc.state = '已归档'
@@ -221,7 +225,7 @@ function handleArchive(row) {
   }
 }
 function handleUnarchive(row) {
-  const item = allArchiveData.value.find(i => i.project_name === searchForm.value.project_name)
+  const item = allArchiveData.value.find(i => i.project_name === currentProject.value.project_name)
   if (item) {
     const doc = item.documents.find(d => d.stage === row.stage && d.type === row.type)
     if (doc) doc.state = '未归档'

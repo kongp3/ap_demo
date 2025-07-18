@@ -1,16 +1,6 @@
 <template>
   <div class="project-members">
-    <el-card class="search-card" shadow="never">
-      <el-form class="search-form" :model="searchForm" inline>
-        <el-form-item label="项目名称">
-          <el-input v-model="searchForm.project_name" placeholder="请输入项目名称" clearable style="width: 220px" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
+    <ProjectBreadcrumb :main="'审计准备'" :sub="'项目成员'" @project-change="onProjectChange" />
     <el-card class="list-card" shadow="never">
       <template #header>
         <div class="card-header">
@@ -24,10 +14,10 @@
         <el-table-column prop="username" label="成员姓名" min-width="120" />
         <el-table-column prop="role" label="项目角色" min-width="120" />
         <el-table-column prop="organization" label="所属审计机构" min-width="120" />
-        <el-table-column label="操作" width="220" align="right">
+        <el-table-column label="操作" width="220">
           <template #default="scope">
-            <el-button type="primary" link @click="handleEdit(scope.row)">修改</el-button>
-            <el-button type="info" link @click="handleView(scope.row)">查看成员信息</el-button>
+            <el-button type="info" link @click="handleView(scope.row)">查看</el-button>
+            <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="danger" link @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -86,8 +76,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
 
 const mockData = [
   { code: '1', username: '张三', role: '项目组长', organization: '集团审计部', project_name: 'A公司“两金”专项审计' },
@@ -133,10 +124,11 @@ const pagedData = computed(() => {
 })
 function handleSearch() {
   currentPage.value = 1
+  filterTableData()
 }
 function handleReset() {
-  searchForm.value.project_name = ''
   currentPage.value = 1
+  filterTableData()
 }
 
 // 分页
@@ -211,6 +203,27 @@ async function handleSubmit() {
     // 表单校验失败
   }
 }
+
+const currentProject = ref({})
+function onProjectChange(project) {
+  currentProject.value = project
+  filterTableData()
+}
+
+function filterTableData() {
+  if (!currentProject.value.project_name) {
+    tableData.value = []
+    return
+  }
+  tableData.value = mockData.filter(item => item.project_name === currentProject.value.project_name)
+}
+
+onMounted(() => {
+  if (mockData.length > 0) {
+    currentProject.value = mockData[0]
+    filterTableData()
+  }
+})
 </script>
 
 <style scoped>

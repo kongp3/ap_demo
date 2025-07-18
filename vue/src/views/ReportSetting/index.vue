@@ -1,10 +1,8 @@
 <template>
   <div class="report-setting">
+    <ProjectBreadcrumb :main="'审计终结'" :sub="'入报设定'" @project-change="onProjectChange" />
     <el-card class="search-card" shadow="never">
       <el-form class="search-form" :model="searchForm" inline>
-        <el-form-item label="项目名称">
-          <el-input v-model="searchForm.project_name" placeholder="请输入项目名称" clearable style="width: 200px" />
-        </el-form-item>
         <el-form-item label="问题等级">
           <el-select v-model="searchForm.level" placeholder="请选择问题等级" clearable style="width: 160px">
             <el-option label="高风险" value="高风险" />
@@ -65,9 +63,30 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { draftList } from '../AuditDraft/mock.js'
+import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
+const currentProject = ref({})
+function onProjectChange(project) {
+  currentProject.value = project
+  filterTableData()
+}
+
+function filterTableData() {
+  if (!currentProject.value.project_name) {
+    tableData.value = []
+    return
+  }
+  tableData.value = allIssues.filter(item => item.project_name === currentProject.value.project_name)
+}
+
+onMounted(() => {
+  if (allIssues.length > 0) {
+    currentProject.value = allIssues[0]
+    filterTableData()
+  }
+})
 
 // 扁平化所有底稿的customers为问题列表
 const allIssues = []
@@ -88,16 +107,13 @@ draftList.forEach(draft => {
 
 const loading = ref(false)
 const tableData = ref([...allIssues])
-const searchForm = ref({ project_name: '', level: '', finder: '' })
+const searchForm = ref({ level: '', finder: '' })
 const currentPage = ref(1)
 const pageSize = ref(10)
 const multipleSelection = ref([])
 
 const filteredData = computed(() => {
   let data = tableData.value
-  if (searchForm.value.project_name) {
-    data = data.filter(item => item.project_name && item.project_name.includes(searchForm.value.project_name))
-  }
   if (searchForm.value.level) {
     data = data.filter(item => item.level === searchForm.value.level)
   }
@@ -125,12 +141,13 @@ function handlePageChange(page) {
 }
 function handleSearch() {
   currentPage.value = 1
+  filterTableData()
 }
 function handleReset() {
-  searchForm.value.project_name = ''
   searchForm.value.level = ''
   searchForm.value.finder = ''
   currentPage.value = 1
+  filterTableData()
 }
 </script>
 

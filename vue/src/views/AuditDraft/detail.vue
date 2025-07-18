@@ -1,4 +1,5 @@
 <template>
+  <el-button type="primary" @click="$router.back()" style="margin-bottom: 16px;">返回</el-button>
   <div class="draft-detail">
     <!-- 基本信息 -->
     <el-card class="section-card" shadow="never">
@@ -97,7 +98,7 @@
                 <el-table-column label="操作" width="220">
                   <template #default="scope">
                     <el-button type="info" link @click="handleViewIssue(scope.row)">查看</el-button>
-                    <el-button v-if="!isView" type="primary" link @click="handleEditIssue(scope.row)">修改</el-button>
+                    <el-button v-if="!isView" type="primary" link @click="handleEditIssue(scope.row)">编辑</el-button>
                     <el-button v-if="!isView" type="danger" link @click="handleDeleteIssue(scope.row)">删除</el-button>
                   </template>
                 </el-table-column>
@@ -143,7 +144,7 @@
             <el-table-column prop="filename" label="附件名称" min-width="120" />
             <el-table-column prop="filesize" label="附件大小" width="100" />
             <el-table-column prop="upload_time" label="上传时间" width="160" />
-            <el-table-column label="操作" width="160" align="right">
+            <el-table-column label="操作" width="160">
               <template #default="scope">
                 <el-button type="primary" link @click="handleDownloadAttach(scope.row)">下载</el-button>
                 <el-button v-if="issueDialogMode !== 'view'" type="danger" link @click="handleDeleteAttach(scope.row)">删除</el-button>
