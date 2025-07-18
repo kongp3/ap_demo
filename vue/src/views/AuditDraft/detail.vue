@@ -237,7 +237,7 @@ onDeactivated(() => {
 async function loadDraftInfoFromApi() {
   try {
     const { data } = await fetchDraftInfo()
-    // draftForm.project_name = data.project_name || ''
+    draftForm.project_name = data.project_name || ''
     draftForm.draft_name = data.name || ''
     draftForm.audit_unit = data.company_name || ''
     draftForm.audit_items = data.focus ? [data.focus] : []
