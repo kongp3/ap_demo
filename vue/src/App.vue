@@ -71,12 +71,20 @@
           </el-menu>
         </el-aside>
   
-        <!-- 主内容区 -->
-        <el-main style="padding: 24px; background: #f5f7fa; width: 100%; height: 100%; overflow: auto;">
-          <el-card shadow="never" style="min-height: calc(100vh - 100px); border-radius: 8px; border: none; width: 100%;">
-            <router-view />
-          </el-card>
-        </el-main>
+        <el-container>
+          <!-- 主内容区 -->
+          <el-main style="padding: 24px 24px 40px 24px; background: #f5f7fa; width: 100%; height: 100%; overflow: auto;">
+            <el-card shadow="never" style="min-height: calc(100vh - 146px); border-radius: 8px; border: none; width: 100%;">
+              <router-view />
+            </el-card>
+          </el-main>
+          <!-- 版权信息 -->
+          <el-footer style="height: 40px; background: #f5f7fa; border-top: 1px solid #e4e7ed; display: flex; align-items: center; justify-content: center; padding: 0;">
+            <div style="color: #909399; font-size: 12px;">
+              © {{ new Date().getFullYear() }} 北京航空航天大学. 版权所有.
+            </div>
+          </el-footer>
+        </el-container>
       </el-container>
     </el-container>
   </template>
