@@ -65,10 +65,11 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { auditPlanList } from './mock.js'
+import { projectNameList } from '../ProjectInfo/mock.js'
 import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
 
 const loading = ref(false)
-const tableData = ref([...auditPlanList])
+const tableData = ref([]) // 初始化为空数组，等待项目选择后再加载数据
 const searchForm = ref({ project_name: '', plan_name: '' })
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -93,17 +94,36 @@ function onProjectChange(project) {
 }
 
 function filterTableData() {
+  
+  // debugger
+  console.log(currentProject.value)
   if (!currentProject.value.project_name) {
     tableData.value = []
     return
   }
-  tableData.value = auditPlanList.filter(item => item.project_name === currentProject.value.project_name)
+  console.log(auditPlanList)
+  console.log(currentProject.value.project_name)
+  // 先根据项目名称过滤
+  let filteredData = auditPlanList.filter(item => item.project_name === currentProject.value.project_name)
+  console.log(filteredData)
+
+  // 再根据搜索条件过滤
+  if (searchForm.value.plan_name) {
+    filteredData = filteredData.filter(item => item.plan_name && item.plan_name.includes(searchForm.value.plan_name))
+  }
+  
+  tableData.value = filteredData
 }
 
 onMounted(() => {
-  if (auditPlanList.length > 0) {
-    currentProject.value = auditPlanList[0]
-    filterTableData()
+  // 页面刷新时，从localStorage读取项目选择并立即过滤数据
+  const savedCode = localStorage.getItem('global_project_code')
+  if (savedCode) {
+    const project = projectNameList.find(p => p.project_code === savedCode)
+    if (project) {
+      currentProject.value = project
+      filterTableData()
+    }
   }
 })
 
@@ -134,7 +154,6 @@ function handlePageChange(page) {
 }
 function handleSearch() {
   currentPage.value = 1
-  console.log(searchForm.value)
   filterTableData()
 }
 function handleReset() {

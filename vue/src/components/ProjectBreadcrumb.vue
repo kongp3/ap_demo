@@ -12,7 +12,7 @@
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item
-                v-for="item in projectList"
+                v-for="item in projectNameList"
                 :key="item.project_code"
                 :command="item.project_code"
               >
@@ -29,7 +29,7 @@
 <script setup>
 import { ref, watch, defineProps, defineEmits, onMounted } from 'vue'
 import { ArrowDown } from '@element-plus/icons-vue'
-import { projectList } from '../views/ProjectInfo/mock.js'
+import { projectNameList } from '../views/ProjectInfo/mock.js'
 
 const props = defineProps({
   main: String,
@@ -45,18 +45,21 @@ const currentProject = ref({})
 onMounted(() => {
   // 优先从localStorage读取全局选中项目
   const savedCode = localStorage.getItem('global_project_code')
-  if (savedCode && projectList.find(p => p.project_code === savedCode)) {
+  if (savedCode && projectNameList.find(p => p.project_code === savedCode)) {
     currentProjectCode.value = savedCode
-    currentProject.value = projectList.find(p => p.project_code === savedCode)
+    currentProject.value = projectNameList.find(p => p.project_code === savedCode)
   } else {
-    currentProjectCode.value = projectList[0]?.project_code || ''
-    currentProject.value = projectList.find(p => p.project_code === currentProjectCode.value) || {}
+    currentProjectCode.value = projectNameList[0]?.project_code || ''
+    currentProject.value = projectNameList.find(p => p.project_code === currentProjectCode.value) || {}
   }
+  
+  // 初始化时触发project-change事件，确保页面能获取到当前项目
+  emit('project-change', currentProject.value)
 })
 
 function handleProjectChange(code) {
   currentProjectCode.value = code
-  currentProject.value = projectList.find(p => p.project_code === code) || {}
+  currentProject.value = projectNameList.find(p => p.project_code === code) || {}
   localStorage.setItem('global_project_code', code)
   emit('project-change', currentProject.value)
 }
@@ -64,7 +67,7 @@ function handleProjectChange(code) {
 watch(() => props.projectCode, (val) => {
   if (val) {
     currentProjectCode.value = val
-    currentProject.value = projectList.find(p => p.project_code === val) || {}
+    currentProject.value = projectNameList.find(p => p.project_code === val) || {}
     localStorage.setItem('global_project_code', val)
   }
 })

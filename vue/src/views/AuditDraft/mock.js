@@ -1,7 +1,7 @@
 export const draftList = [{
     draft_code: "1",    // 底稿编号
     draft_name: "应收账款审计底稿",//底稿名称
-    project_name: "A公司“两金”专项审计项目",
+    project_name: "A公司“两金”专项审计",
     audit_unit: "中国第四冶金建设有限责任公司",//被审计单位
     audit_items: ["客商信息", "账龄分析", "应收账款综合占比"],//审计事项
     collector: "张三",//取证人
@@ -51,7 +51,7 @@ export const draftList = [{
 },{
     draft_code: "2",    // 底稿编号
     draft_name: "应收账款审计底稿-内审版",//底稿名称
-    project_name: "A公司“两金”专项审计项目",
+    project_name: "A公司“两金”专项审计",
     audit_unit: "中国第四冶金建设有限责任公司",//被审计单位
     audit_items: ["客商信息", "应收账款综合占比"],//审计事项
     collector: "张三",//取证人
@@ -101,7 +101,7 @@ export const draftList = [{
 },{
     draft_code: "3",    // 底稿编号
     draft_name: "对中国第四冶金建设有限责任公司应收账款审计底稿",//底稿名称
-    project_name: "A公司“两金”专项审计项目",
+    project_name: "A公司“两金”专项审计",
     audit_unit: "中国第四冶金建设有限责任公司",//被审计单位
     audit_items: ["客商信息", "账龄分析"],//审计事项
     collector: "张三",//取证人

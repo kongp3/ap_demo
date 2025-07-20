@@ -1,7 +1,7 @@
 export const auditPlanList = [{
   plan_code: "1",// 方案编号
   plan_name: "A公司“两金”专项审计方案",//方案名称
-  project_name: "A公司“两金”专项审计项目",
+  project_name: "A公司“两金”专项审计",
   date: "2025-01-01",//编制日期
   source: "",//编制依据
   remark: "",//备注
@@ -129,8 +129,8 @@ export const auditPlanList = [{
   }]
 },{
   plan_code: "2",// 方案编号
-  plan_name: "B公司“两金”专项审计方案",//方案名称
-  project_name: "B公司“两金”专项审计项目",
+  plan_name: "B公司两金专项审计方案",//方案名称
+  project_name: "B公司环保设施建设项目竣工建设项目审计",
   date: "2025-02-01",//编制日期
   source: "",//编制依据
   remark: "",//备注
@@ -238,8 +238,8 @@ export const auditPlanList = [{
   }]
 },{
   plan_code: "3",// 方案编号
-  plan_name: "C公司“两金”专项审计方案",//方案名称
-  project_name: "C公司“两金”专项审计项目",
+  plan_name: "C公司两金专项审计方案",//方案名称
+  project_name: "关于对C公司招投标业务的专项审计",
   date: "2025-03-01",//编制日期
   source: "",//编制依据
   remark: "",//备注

@@ -73,10 +73,11 @@ import { ElMessage } from 'element-plus'
 import { archiveList } from './mock.js'
 import { modelList } from './model.js'
 import { projectList } from '../ProjectInfo/mock.js'
+import { projectNameList } from '../ProjectInfo/mock.js'
 import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
 
 const loading = ref(false)
-const allArchiveData = ref([...archiveList])
+const allArchiveData = ref([]) // 初始化为空数组，等待项目选择后再加载数据
 const searchForm = ref({ project_name: '' })
 const multipleSelection = ref([])
 const currentProject = ref({})
@@ -95,9 +96,14 @@ function filterTableData() {
 }
 
 onMounted(() => {
-  if (archiveList.length > 0) {
-    currentProject.value = archiveList[0]
-    filterTableData()
+  // 页面刷新时，从localStorage读取项目选择并立即过滤数据
+  const savedCode = localStorage.getItem('global_project_code')
+  if (savedCode) {
+    const project = projectNameList.find(p => p.project_code === savedCode)
+    if (project) {
+      currentProject.value = project
+      filterTableData()
+    }
   }
 })
 

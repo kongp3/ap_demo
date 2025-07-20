@@ -18,6 +18,24 @@ export const getAllOrganizations = () => {
   return organizations.map(org => ({ label: org, value: org }))
 }
 
+// 项目名称数据数组 - 供其他模块使用
+export const projectNameList = [
+  { project_code: "202520001124JZ008", project_name: "A公司“两金”专项审计" },
+  { project_code: "202520001124JZ007", project_name: "关于对A公司总经理李某明同志任期经济责任暨经营管理状况审计" },
+  { project_code: "202520001124JZ009", project_name: "B公司环保设施建设项目竣工建设项目审计" },
+  { project_code: "202520001124JZ010", project_name: "关于对C公司招投标业务的专项审计" },
+  { project_code: "202520001124JZ011", project_name: "D公司内部内部控制审计" },
+  { project_code: "202520001124JZ012", project_name: "关于对B公司招投标业务的专项审计" },
+  { project_code: "202520001124JZ013", project_name: "关于对A公司招投标业务的专项审计" },
+  { project_code: "202520001124JZ014", project_name: "C公司环保设施建设项目竣工建设项目审计" },
+  { project_code: "202520001124JZ015", project_name: "F公司环保设施建设项目竣工建设项目审计" },
+  { project_code: "202520001124JZ016", project_name: "F公司内部内部控制审计" },
+  { project_code: "202520001124JZ017", project_name: "D公司内部内部控制审计" },
+  { project_code: "202520001124JZ018", project_name: "G公司内部内部控制审计" },
+  { project_code: "202520001124JZ019", project_name: "H公司内部内部控制审计" },
+  { project_code: "202520001124JZ020", project_name: "J公司内部内部控制审计" }
+]
+
 export const projectList =[
     {
       project_code: "202520001124JZ008",

@@ -36,7 +36,7 @@
         <!-- <el-table-column prop="issue_num" label="问题个数" width="100" /> -->
         <!-- <el-table-column prop="create_time" label="创建日期" width="160" /> -->
         <el-table-column prop="update_time" label="最后修改日期" width="160" />
-        <el-table-column label="操作" width="220">
+        <el-table-column label="操作" width="160">
           <template #default="scope">
             <el-button type="info" link @click="handleView(scope.row)">查看</el-button>
             <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
@@ -59,14 +59,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { draftList } from './mock.js'
+import { projectNameList } from '../ProjectInfo/mock.js'
 import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
 
 const loading = ref(false)
-const tableData = ref([...draftList])
+const tableData = ref([]) // 初始化为空数组，等待项目选择后再加载数据
 const searchForm = ref({ draft_name: '', audit_unit: '' })
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -86,6 +87,31 @@ const pagedData = computed(() => {
   return filteredData.value.slice(start, start + pageSize.value)
 })
 const router = useRouter()
+const currentProject = ref({})
+
+function onProjectChange(project) {
+  currentProject.value = project
+  filterTableData()
+}
+
+function filterTableData() {
+  if (!currentProject.value.project_name) {
+    tableData.value = []
+    return
+  }
+  // 先根据项目名称过滤
+  let filteredData = draftList.filter(item => item.project_name === currentProject.value.project_name)
+  
+  // 再根据搜索条件过滤
+  if (searchForm.value.draft_name) {
+    filteredData = filteredData.filter(item => item.draft_name && item.draft_name.includes(searchForm.value.draft_name))
+  }
+  if (searchForm.value.audit_unit) {
+    filteredData = filteredData.filter(item => item.audit_unit && item.audit_unit.includes(searchForm.value.audit_unit))
+  }
+  
+  tableData.value = filteredData
+}
 
 function handleAdd() {
   router.push({ path: '/audit-draft/detail', query: { mode: 'add' } })
@@ -114,6 +140,7 @@ function handlePageChange(page) {
 }
 function handleSearch() {
   currentPage.value = 1
+  filterTableData()
 }
 function handleReset() {
   searchForm.value.draft_name = ''
@@ -121,6 +148,18 @@ function handleReset() {
   currentPage.value = 1
   filterTableData()
 }
+
+// 页面刷新时，从localStorage读取项目选择并立即过滤数据
+onMounted(() => {
+  const savedCode = localStorage.getItem('global_project_code')
+  if (savedCode) {
+    const project = projectNameList.find(p => p.project_code === savedCode)
+    if (project) {
+      currentProject.value = project
+      filterTableData()
+    }
+  }
+})
 </script>
 
 <style scoped>

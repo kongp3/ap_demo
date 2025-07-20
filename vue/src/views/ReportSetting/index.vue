@@ -66,6 +66,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { draftList } from '../AuditDraft/mock.js'
+import { projectNameList } from '../ProjectInfo/mock.js'
 import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
 const currentProject = ref({})
 function onProjectChange(project) {
@@ -82,9 +83,14 @@ function filterTableData() {
 }
 
 onMounted(() => {
-  if (allIssues.length > 0) {
-    currentProject.value = allIssues[0]
-    filterTableData()
+  // 页面刷新时，从localStorage读取项目选择并立即过滤数据
+  const savedCode = localStorage.getItem('global_project_code')
+  if (savedCode) {
+    const project = projectNameList.find(p => p.project_code === savedCode)
+    if (project) {
+      currentProject.value = project
+      filterTableData()
+    }
   }
 })
 
@@ -106,7 +112,7 @@ draftList.forEach(draft => {
 })
 
 const loading = ref(false)
-const tableData = ref([...allIssues])
+const tableData = ref([]) // 初始化为空数组，等待项目选择后再加载数据
 const searchForm = ref({ level: '', finder: '' })
 const currentPage = ref(1)
 const pageSize = ref(10)

@@ -80,6 +80,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
 import {memberList} from './mock.js'
+import { projectNameList } from '../ProjectInfo/mock.js'
 
 const mockData = memberList
 
@@ -87,7 +88,7 @@ const userOptions = ['张三', '李四', '王五', '赵六']
 const roleOptions = ['项目组长', '项目主审', '项目组员']
 
 const loading = ref(false)
-const tableData = ref([...mockData])
+const tableData = ref([]) // 初始化为空数组，等待项目选择后再加载数据
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const dialogMode = ref('add') // add/edit/view
@@ -216,9 +217,14 @@ function filterTableData() {
 }
 
 onMounted(() => {
-  if (mockData.length > 0) {
-    currentProject.value = mockData[0]
-    filterTableData()
+  // 页面刷新时，从localStorage读取项目选择并立即过滤数据
+  const savedCode = localStorage.getItem('global_project_code')
+  if (savedCode) {
+    const project = projectNameList.find(p => p.project_code === savedCode)
+    if (project) {
+      currentProject.value = project
+      filterTableData()
+    }
   }
 })
 </script>
