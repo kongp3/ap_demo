@@ -79,12 +79,9 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
+import {memberList} from './mock.js'
 
-const mockData = [
-  { code: '1', username: '张三', role: '项目组长', organization: '集团审计部', project_name: 'A公司“两金”专项审计' },
-  { code: '2', username: '李四', role: '项目主审', organization: 'A公司', project_name: 'A公司“两金”专项审计' },
-  { code: '3', username: '王五', role: '项目成员', organization: 'B公司', project_name: 'A公司“两金”专项审计' }
-]
+const mockData = memberList
 
 const userOptions = ['张三', '李四', '王五', '赵六']
 const roleOptions = ['项目组长', '项目主审', '项目组员']

@@ -134,6 +134,7 @@ function handlePageChange(page) {
 }
 function handleSearch() {
   currentPage.value = 1
+  console.log(searchForm.value)
   filterTableData()
 }
 function handleReset() {

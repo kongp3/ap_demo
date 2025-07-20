@@ -12,6 +12,7 @@
           </el-form-item>
           <el-form-item label="项目类型">
             <el-select v-model="searchForm.type" placeholder="请选择项目类型" clearable style="width: 120px">
+                <el-option label="全部" value="" />
                 <el-option
                     v-for="item in typeOptions"
                     :key="item.value"
@@ -22,6 +23,7 @@
           </el-form-item>
           <el-form-item label="项目状态">
             <el-select v-model="searchForm.state" placeholder="请选择项目状态" clearable style="width: 120px">
+                <el-option label="全部" value="" />
                 <el-option
                     v-for="item in stateOptions"
                     :key="item.value"
@@ -54,6 +56,13 @@
           <el-table-column prop="type" label="项目类型" width="100" />
           <el-table-column prop="organization" label="审计机构" width="120" />
           <el-table-column prop="leader" label="项目负责人" width="120" />
+          <el-table-column prop="state" label="项目状态" width="100">
+            <template #default="{ row }">
+              <el-tag :type="getStateType(row.state)">
+                {{ row.state }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column label="操作" width="150">
             <template #default="scope">
               <el-button type="info" link @click="handleView(scope.row)">查看</el-button>
@@ -126,12 +135,26 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="审计机构" prop="organization">
-                <el-input v-model="form.organization" placeholder="请输入审计机构" />
+                <el-select v-model="form.organization" placeholder="请选择审计机构" style="width: 100%">
+                  <el-option
+                    v-for="org in organizationOptions"
+                    :key="org.value"
+                    :label="org.label"
+                    :value="org.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="项目负责人" prop="leader">
-                <el-input v-model="form.leader" placeholder="请输入项目负责人" />
+                <el-select v-model="form.leader" placeholder="请选择项目负责人" style="width: 100%">
+                  <el-option
+                    v-for="member in memberOptions"
+                    :key="member.code"
+                    :label="member.username"
+                    :value="member.username"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -184,7 +207,9 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="项目状态" prop="state">
-                <el-input v-model="viewData.state" disabled />
+                <el-select v-model="viewData.state" disabled style="width: 100%">
+                  <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -203,14 +228,28 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="审计机构" prop="organization">
-                <el-input v-model="viewData.organization" disabled />
+                <el-select v-model="viewData.organization" disabled style="width: 100%">
+                  <el-option
+                    v-for="org in organizationOptions"
+                    :key="org.value"
+                    :label="org.label"
+                    :value="org.value"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="项目负责人" prop="leader">
-                <el-input v-model="viewData.leader" disabled />
+                <el-select v-model="viewData.leader" disabled style="width: 100%">
+                  <el-option
+                    v-for="member in memberOptions"
+                    :key="member.code"
+                    :label="member.username"
+                    :value="member.username"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -253,9 +292,10 @@
   
   <script setup>
   import { ref, reactive, computed, onMounted } from 'vue'
-  import { ElMessage, ElMessageBox } from 'element-plus'
-  import { projectList } from './mock.js'
-  import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { projectList, organizationOptions } from './mock.js'
+import { memberList } from '../ProjectMembers/mock.js'
+import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
   
   // Mock数据
   const mockData = projectList
@@ -289,6 +329,9 @@
         label: '已取消',
     }
   ]
+
+  // 项目成员选项
+  const memberOptions = memberList
   
   // 响应式数据
   const loading = ref(false)
@@ -303,8 +346,8 @@
   const searchForm = reactive({
     project_code: '',
     project_name: '',
-    type: '专项审计',
-    state: '已完成'
+    type: '',
+    state: ''
   })
   
   const form = reactive({

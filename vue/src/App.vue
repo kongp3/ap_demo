@@ -99,7 +99,7 @@
                 <el-icon><Tools /></el-icon>
                 <span>审计配置</span>
               </template>
-              <el-menu-item index="/audit-config/risk-template">
+              <el-menu-item index="/risk-template">
                 <el-icon><Warning /></el-icon>
                 <span>风险模版</span>
               </el-menu-item>
