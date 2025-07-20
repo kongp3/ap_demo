@@ -2,7 +2,7 @@
   <div class="audit-draft">
     <ProjectBreadcrumb :main="'审计实施'" :sub="'审计底稿'" @project-change="onProjectChange" />
     <el-card class="search-card" shadow="never">
-      <el-form :model="searchForm" inline>
+      <el-form class="search-form" :model="searchForm" inline>
         <el-form-item label="底稿名称">
           <el-input v-model="searchForm.draft_name" placeholder="请输入底稿名称" clearable style="width: 220px" />
         </el-form-item>
@@ -129,6 +129,9 @@ function handleReset() {
 }
 .search-card {
   margin-bottom: 16px;
+}
+.search-form .el-form-item{
+  margin-bottom: 0;
 }
 .list-card {
   margin-bottom: 16px;

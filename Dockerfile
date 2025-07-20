@@ -24,8 +24,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir gunicorn==20.1.0
 
 # 创建静态文件目录并设置权限
-RUN mkdir -p /app/app/static && \
-    chmod -R 755 /app/app/static
+#RUN mkdir -p /app/app/static && \
+#    chmod -R 755 /app/app/static
 
 # 暴露端口
 EXPOSE 5000

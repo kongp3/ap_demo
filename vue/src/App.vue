@@ -94,6 +94,16 @@
                 <span>文书归档</span>
               </el-menu-item>
             </el-sub-menu>
+            <el-sub-menu index="4">
+              <template #title>
+                <el-icon><Tools /></el-icon>
+                <span>审计配置</span>
+              </template>
+              <el-menu-item index="/audit-config/risk-template">
+                <el-icon><Warning /></el-icon>
+                <span>风险模版</span>
+              </el-menu-item>
+            </el-sub-menu>
           </el-menu>
         </el-aside>
   
@@ -127,7 +137,9 @@
     Edit,
     Check,
     Setting,
-    Folder
+    Folder,
+    Tools,
+    Warning
   } from '@element-plus/icons-vue'
   
   const router = useRouter()
@@ -135,7 +147,7 @@
   const activeMenu = ref(route.path || '/project-info')
   
   // 展开的二级菜单index
-  const openMenus = ref(['1', '2', '3'])
+  const openMenus = ref(['1', '2', '3', '4'])
 
   // Dify 聊天机器人弹窗显示状态
   const aiPopoverVisible = ref(false)
@@ -154,7 +166,7 @@
   }
   
   onMounted(() => {
-    openMenus.value = ['1', '2', '3']
+    openMenus.value = ['1', '2', '3', '4']
   })
 
   watch(aiPopoverVisible, (val) => {

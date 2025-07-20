@@ -16,5 +16,11 @@ docker run -d \
   -p 5000:5000 \
   --network app-network \
   -v /root/workspace/audit/app:/app/app \
+  --name audit-v2 \
+  audit:2.0.0
+
+docker run -d \
+  -p 5000:5000 \
+  --network app-network \
   --name audit \
-  audit:1.0.0
+  audit:2.0.0

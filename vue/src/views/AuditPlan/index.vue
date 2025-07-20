@@ -2,7 +2,7 @@
   <div class="audit-plan">
     <ProjectBreadcrumb :main="'审计准备'" :sub="'审计方案'" @project-change="onProjectChange" />
     <el-card class="search-card" shadow="never">
-      <el-form :model="searchForm" inline>
+      <el-form class="search-form" :model="searchForm" inline>
         <el-form-item label="方案名称">
           <el-input v-model="searchForm.plan_name" placeholder="请输入方案名称" clearable style="width: 220px" />
         </el-form-item>
@@ -164,6 +164,9 @@ function getAllLeafNodes(items) {
 }
 .search-card {
   margin-bottom: 16px;
+}
+.search-form .el-form-item{
+  margin-bottom: 0;
 }
 .list-card {
   margin-bottom: 16px;

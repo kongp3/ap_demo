@@ -10,6 +10,8 @@ const routes = [
   { path: '/audit-draft/detail', component: () => import('../views/AuditDraft/detail.vue') },
   { path: '/report-setting', component: () => import('../views/ReportSetting/index.vue') },
   { path: '/document-archive', component: () => import('../views/DocumentArchive/index.vue') },
+  { path: '/risk-template', component: () => import('../views/RiskTemplate/index.vue') },
+  { path: '/risk-template/detail', component: () => import('../views/RiskTemplate/detail.vue') },
 ]
 
 const router = createRouter({

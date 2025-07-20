@@ -1,7 +1,7 @@
 // 审计底稿相关API
 import axios from 'axios'
 
-const BASE_URL = 'http://localhost:5001/api'
+const BASE_URL = 'http://121.43.233.12:8080/api'
 
 // 1.1 获取底稿基本信息
 export function fetchDraftInfo() {
