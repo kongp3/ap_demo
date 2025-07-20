@@ -22,11 +22,28 @@
         <el-table-column type="selection" width="50" />
         <el-table-column prop="stage" label="项目阶段" min-width="100" />
         <el-table-column prop="type" label="工作项" min-width="80" />
-        <el-table-column prop="model" label="对应模版" min-width="80" />
+        <el-table-column prop="model" label="对应模版" min-width="80">
+          <template #default="scope">
+            <template v-if="scope.row.model && scope.row.model !== '--'">
+              <el-link type="primary" :underline="false" @click="handleDownloadModel(scope.row)">{{ scope.row.model }}</el-link>
+            </template>
+            <template v-else>--</template>
+          </template>
+        </el-table-column>
         <el-table-column prop="attach" label="已传文书" min-width="160">
           <template #default="scope">
-            <template v-if="scope.row.attach">
-              <el-link type="primary" :underline="false" @click="handleDownload(scope.row)">{{ scope.row.attach }}</el-link>
+            <template v-if="Array.isArray(scope.row.attach) && scope.row.attach.length">
+              <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
+                <el-link
+                  v-for="file in scope.row.attach"
+                  :key="file.name"
+                  type="primary"
+                  :underline="false"
+                  :href="file.url"
+                  :download="file.name"
+                  target="_blank"
+                >{{ file.name }}</el-link>
+              </div>
             </template>
             <template v-else>--</template>
           </template>
@@ -41,23 +58,31 @@
             </template>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180">
+        <el-table-column label="操作" width="230">
           <template #default="scope">
             <div style="display: flex; gap: 8px; align-items: center;">
               <template v-if="scope.row.state === '已归档'">
                 <el-button type="warning" link @click="handleUnarchive(scope.row)">撤销归档</el-button>
               </template>
-              <template v-else-if="scope.row.attach">
-                <el-button type="success" link @click="handleArchive(scope.row)">确认归档</el-button>
-                <el-button type="danger" link @click="handleClear(scope.row)">清空文书</el-button>
-              </template>
               <template v-else>
+                <el-button
+                  v-if="Array.isArray(scope.row.attach) && scope.row.attach.length"
+                  type="success"
+                  link
+                  @click="handleArchive(scope.row)"
+                >确认归档</el-button>
                 <el-upload
                   :show-file-list="false"
                   :before-upload="file => handleUpload(scope.row, file)"
                 >
                   <el-button type="primary" link>上传文书</el-button>
                 </el-upload>
+                <el-button
+                  v-if="Array.isArray(scope.row.attach) && scope.row.attach.length"
+                  type="danger"
+                  link
+                  @click="handleClear(scope.row)"
+                >清空文书</el-button>
               </template>
             </div>
           </template>
@@ -138,8 +163,23 @@ function handleUpload(row, file) {
   const item = allArchiveData.value.find(i => i.project_name === currentProject.value.project_name)
   if (item) {
     const doc = item.documents.find(d => d.stage === row.stage && d.type === row.type)
-    if (doc) doc.attach = file.name
-    ElMessage.success('上传成功')
+    if (doc) {
+      // 兼容老数据
+      if (!Array.isArray(doc.attach)) {
+        if (typeof doc.attach === 'string' && doc.attach) {
+          doc.attach = [{ name: doc.attach, url: `/download/${encodeURIComponent(doc.attach)}` }]
+        } else {
+          doc.attach = []
+        }
+      }
+      // 归档后不可再上传
+      if (doc.state === '已归档') {
+        ElMessage.warning('已归档文书不可再上传')
+        return false
+      }
+      doc.attach.push({ name: file.name, url: `/download/${encodeURIComponent(file.name)}` })
+      ElMessage.success('上传成功')
+    }
   }
   return false // 阻止自动上传
 }
@@ -236,6 +276,20 @@ function handleUnarchive(row) {
     const doc = item.documents.find(d => d.stage === row.stage && d.type === row.type)
     if (doc) doc.state = '未归档'
     ElMessage.success('已撤销归档')
+  }
+}
+function handleDownloadModel(row) {
+  // 假设model字段为模版文件名，实际可根据需要调整为真实url
+  if (row.model && row.model !== '--') {
+    // 这里只做下载模拟，实际可替换为真实模版文件url
+    const filename = row.model + '.docx'
+    const link = document.createElement('a')
+    link.href = `/download/${encodeURIComponent(filename)}`
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    ElMessage.success('模版下载成功')
   }
 }
 </script>

@@ -35,7 +35,7 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="底稿编号" prop="audit_unit">
-              <el-input v-model="draftForm.draft_code" placeholder="请输入被审计单位" />
+              <el-input v-model="draftForm.draft_code" placeholder="请输入底稿编号" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -263,6 +263,16 @@ function handleAIPopoverClose() {
 }
 
 onMounted(() => {
+  // 1. 获取draft_code
+  const draft_code = route.query.draft_code
+  if (draft_code) {
+    // 2. 查找mock数据
+    const draft = draftList.find(item => item.draft_code === draft_code)
+    if (draft) {
+      // 3. 回显数据到draftForm
+      Object.assign(draftForm, JSON.parse(JSON.stringify(draft)))
+    }
+  }
   window.addEventListener('ai-popover-close', handleAIPopoverClose)
 })
 onBeforeUnmount(() => {
@@ -374,7 +384,7 @@ function handleDeleteAttach(row) {
 }
 function handleDownloadAttach(row) {
   // 模拟下载
-  ElMessage.info('模拟下载：' + row.filename)
+  ElMessage.info('下载：' + row.filename)
 }
 
 // 拉取审计问题详情
