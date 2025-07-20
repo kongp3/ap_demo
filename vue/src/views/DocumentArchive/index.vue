@@ -25,7 +25,7 @@
         <el-table-column prop="model" label="对应模版" min-width="80">
           <template #default="scope">
             <template v-if="scope.row.model && scope.row.model !== '--'">
-              <el-link type="primary" :underline="false" @click="handleDownloadModel(scope.row)">{{ scope.row.model }}</el-link>
+              <el-link type="primary" underline="never" @click="handleDownloadModel(scope.row)">{{ scope.row.model }}</el-link>
             </template>
             <template v-else>--</template>
           </template>
@@ -38,7 +38,7 @@
                   v-for="file in scope.row.attach"
                   :key="file.name"
                   type="primary"
-                  :underline="false"
+                  underline="never"
                   :href="file.url"
                   :download="file.name"
                   target="_blank"

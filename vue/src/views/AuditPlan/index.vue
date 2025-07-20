@@ -94,18 +94,12 @@ function onProjectChange(project) {
 }
 
 function filterTableData() {
-  
-  // debugger
-  console.log(currentProject.value)
   if (!currentProject.value.project_name) {
     tableData.value = []
     return
   }
-  console.log(auditPlanList)
-  console.log(currentProject.value.project_name)
   // 先根据项目名称过滤
   let filteredData = auditPlanList.filter(item => item.project_name === currentProject.value.project_name)
-  console.log(filteredData)
 
   // 再根据搜索条件过滤
   if (searchForm.value.plan_name) {
