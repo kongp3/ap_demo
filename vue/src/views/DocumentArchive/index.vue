@@ -6,7 +6,7 @@
         <div class="card-header">
           <span>文档列表</span>
           <div>
-            <el-button type="success" @click="handleInit">初始化归档模版</el-button>
+            <el-button type="success" @click="handleInit">初始化已传文书</el-button>
             <el-button type="primary" @click="setArchive('已归档')" :disabled="!multipleSelection.length">归档确认</el-button>
             <el-button type="warning" @click="setArchive('未归档')" :disabled="!multipleSelection.length">撤销归档</el-button>
           </div>

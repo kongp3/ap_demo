@@ -7,7 +7,9 @@
           <el-input v-model="searchForm.draft_name" placeholder="请输入底稿名称" clearable style="width: 220px" />
         </el-form-item>
         <el-form-item label="被审计单位">
-          <el-input v-model="searchForm.audit_unit" placeholder="请输入被审计单位" clearable style="width: 220px" />
+          <el-select v-model="searchForm.audit_unit" placeholder="请选择被审计单位" allow-create filterable clearable style="width: 220px">
+            <el-option v-for="item in unitList" :key="item.code" :label="item.organization" :value="item.organization" />
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -64,6 +66,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { draftList } from './mock.js'
 import { projectNameList } from '../ProjectInfo/mock.js'
+import { unitList } from '../ProjectMembers/mock.js'
 import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
 
 const loading = ref(false)

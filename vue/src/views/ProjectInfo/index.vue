@@ -173,7 +173,9 @@
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="被审计单位" prop="audit_unit">
-                <el-input v-model="form.audit_unit" placeholder="请输入被审计单位" />
+                <el-select v-model="form.audit_unit" placeholder="请选择被审计单位" allow-create filterable>
+                  <el-option v-for="item in unitList" :key="item.code" :label="item.organization" :value="item.organization" />
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -260,18 +262,6 @@
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="被审计单位" prop="audit_unit">
-                <el-input v-model="viewData.audit_unit" disabled />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="备注" prop="remark">
-                <el-input v-model="viewData.remark" disabled />
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="12">
               <el-form-item label="开始日期" prop="start_date">
                 <el-input v-model="viewData.start_date" disabled />
               </el-form-item>
@@ -279,6 +269,20 @@
             <el-col :span="12">
               <el-form-item label="结束日期" prop="end_date">
                 <el-input v-model="viewData.end_date" disabled />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="被审计单位" prop="audit_unit">
+                <el-input v-model="viewData.audit_unit" disabled />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="24">
+              <el-form-item label="备注" prop="remark">
+                <el-input type="textarea" v-model="form.remark" placeholder="请输入备注" :rows="4" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -295,6 +299,7 @@
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { projectList, organizationOptions } from './mock.js'
 import { memberList } from '../ProjectMembers/mock.js'
+import { unitList } from '../ProjectMembers/mock.js'
 import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
   
   // Mock数据

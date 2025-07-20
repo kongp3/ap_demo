@@ -5,9 +5,9 @@
       <el-form class="search-form" :model="searchForm" inline>
         <el-form-item label="问题等级">
           <el-select v-model="searchForm.level" placeholder="请选择问题等级" clearable style="width: 160px">
-            <el-option label="高风险" value="高风险" />
-            <el-option label="中风险" value="中风险" />
-            <el-option label="低风险" value="低风险" />
+            <el-option label="严重" value="严重" />
+            <el-option label="中等" value="中等" />
+            <el-option label="轻微" value="轻微" />
           </el-select>
         </el-form-item>
         <el-form-item label="发现人">

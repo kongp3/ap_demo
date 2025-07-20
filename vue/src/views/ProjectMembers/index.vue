@@ -49,7 +49,9 @@
         class="dialog-form"
       >
         <el-form-item label="项目名称" prop="project_name">
-          <el-input v-model="form.project_name" placeholder="请输入项目名称" :disabled="dialogMode==='view'" />
+          <el-select v-model="form.project_name" placeholder="请选择项目名称" :disabled="dialogMode==='view'||dialogMode==='add'">
+            <el-option v-for="item in projectNameList" :key="item.project_code" :label="item.project_name" :value="item.project_name" />
+          </el-select>
         </el-form-item>
         <el-form-item label="成员姓名" prop="username">
           <el-select v-model="form.username" placeholder="请选择成员姓名" :disabled="dialogMode==='view'">
@@ -61,8 +63,10 @@
             <el-option v-for="item in roleOptions" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
-        <el-form-item label="所属审计机构" prop="organization">
-          <el-input v-model="form.organization" placeholder="请输入所属审计机构" :disabled="dialogMode==='view'" />
+        <el-form-item label="被审计单位" prop="audit_unit">
+          <el-select v-model="form.audit_unit" placeholder="请选择被审计单位" :disabled="dialogMode==='view'" allow-create filterable>
+            <el-option v-for="item in unitList" :key="item.code" :label="item.organization" :value="item.organization" />
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -81,6 +85,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import ProjectBreadcrumb from '@/components/ProjectBreadcrumb.vue'
 import {memberList} from './mock.js'
 import { projectNameList } from '../ProjectInfo/mock.js'
+import { unitList } from './mock.js'
 
 const mockData = memberList
 
@@ -98,13 +103,15 @@ const form = reactive({
   username: '',
   role: '',
   organization: '',
-  project_name: ''
+  project_name: '',
+  audit_unit: ''
 })
 const rules = {
   username: [ { required: true, message: '请选择成员姓名', trigger: 'change' } ],
   role: [ { required: true, message: '请选择项目角色', trigger: 'change' } ],
   organization: [ { required: true, message: '请输入所属审计机构', trigger: 'blur' } ],
-  project_name: [ { required: true, message: '请输入项目名称', trigger: 'blur' } ]
+  project_name: [ { required: true, message: '请输入项目名称', trigger: 'blur' } ],
+  audit_unit: [ { required: true, message: '请选择被审计单位', trigger: 'change' } ]
 }
 
 const searchForm = ref({ project_name: '' })
@@ -140,6 +147,14 @@ function handleAdd() {
   dialogTitle.value = '新增成员'
   dialogMode.value = 'add'
   resetForm()
+  // 新增时，项目名称默认取面包屑选中项目
+  const savedCode = localStorage.getItem('global_project_code')
+  if (savedCode) {
+    const project = projectNameList.find(p => p.project_code === savedCode)
+    if (project) {
+      form.project_name = project.project_name
+    }
+  }
   dialogVisible.value = true
 }
 function handleEdit(row) {
@@ -174,6 +189,7 @@ function resetForm() {
   form.role = ''
   form.organization = ''
   form.project_name = ''
+  form.audit_unit = ''
   if (formRef.value) formRef.value.clearValidate()
 }
 async function handleSubmit() {
@@ -186,7 +202,8 @@ async function handleSubmit() {
         username: form.username,
         role: form.role,
         organization: form.organization,
-        project_name: form.project_name
+        project_name: form.project_name,
+        audit_unit: form.audit_unit
       })
       ElMessage.success('新增成功')
     } else if (dialogMode.value === 'edit') {

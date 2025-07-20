@@ -3,7 +3,7 @@
     <!-- 基本信息 -->
     <el-card class="section-card" shadow="never">
       <div class="section-title">底稿基本信息</div>
-      <el-form :model="draftForm" label-width="120px" :disabled="isView">
+      <el-form :model="draftForm" label-width="120px" :disabled="isView" :rules="rules" ref="formRef">
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="项目名称" prop="project_name">
@@ -16,6 +16,7 @@
                 :remote-method="remoteProjectSearch"
                 :loading="projectLoading"
                 style="width: 100%"
+                :disabled="true"
               >
                 <el-option
                   v-for="item in projectOptions"
@@ -34,16 +35,17 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="底稿编号" prop="audit_unit">
+            <el-form-item label="底稿编号" prop="draft_code">
               <el-input v-model="draftForm.draft_code" placeholder="请输入底稿编号" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="被审计单位" prop="audit_unit">
-              <el-input v-model="draftForm.audit_unit" placeholder="请输入被审计单位" />
+              <el-select v-model="draftForm.audit_unit" placeholder="请选择被审计单位" allow-create filterable>
+                <el-option v-for="item in unitList" :key="item.code" :label="item.organization" :value="item.organization" />
+              </el-select>
             </el-form-item>
           </el-col>
-          
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
@@ -132,9 +134,9 @@
     <!-- 问题弹窗保持不变 -->
     <el-dialog v-model="issueDialogVisible" :title="issueDialogTitle" width="1000px" :close-on-click-modal="false">
       <el-form :model="issueForm" label-width="120px" style="max-width: 900px" :disabled="issueDialogMode==='view'">
-        <el-form-item label="客商名称" prop="customer_name">
+        <!-- <el-form-item label="客商名称" prop="customer_name">
           <el-input v-model="issueForm.customer_name" placeholder="请输入客商名称" />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="风险等级" prop="level">
           <el-select v-model="issueForm.level" placeholder="请选择风险等级">
             <el-option label="高风险" value="高风险" />
@@ -195,6 +197,7 @@ import { draftList } from './mock.js'
 import { ElMessage } from 'element-plus'
 import { fetchDraftInfo, fetchAuditProcess, fetchAuditDetailById } from '@/api/auditDraftApi'
 import { projectList } from '../ProjectInfo/mock.js'
+import { unitList } from '../ProjectMembers/mock.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -262,6 +265,25 @@ function handleAIPopoverClose() {
   }
 }
 
+const formRef = ref()
+const rules = {
+  project_name: [
+    { required: true, message: '请选择项目名称', trigger: 'change' }
+  ],
+  draft_name: [
+    { required: true, message: '请输入底稿名称', trigger: 'blur' }
+  ],
+  draft_code: [
+    { required: true, message: '请输入底稿编号', trigger: 'blur' }
+  ],
+  audit_unit: [
+    { required: true, message: '请选择被审计单位', trigger: 'change' }
+  ],
+  audit_items: [
+    { required: true, message: '请选择审计事项', trigger: 'change' }
+  ]
+}
+
 onMounted(() => {
   // 1. 获取draft_code
   const draft_code = route.query.draft_code
@@ -271,6 +293,18 @@ onMounted(() => {
     if (draft) {
       // 3. 回显数据到draftForm
       Object.assign(draftForm, JSON.parse(JSON.stringify(draft)))
+    }
+  }
+  // 新增时，项目名称默认取全局面包屑选中项目且不可修改
+  if (mode.value === 'add') {
+    const savedCode = localStorage.getItem('global_project_code')
+    if (savedCode) {
+      // 获取project_name
+      const project = projectList.find(p => p.project_code === savedCode)
+      if (project) {
+        draftForm.project_name = project.project_name
+        draftForm.audit_unit = project.audit_unit // 自动带出
+      }
     }
   }
   window.addEventListener('ai-popover-close', handleAIPopoverClose)
@@ -408,16 +442,19 @@ async function loadAuditDetailFromApi(detail_id) {
 }
 
 function handleSubmit() {
-  // 保存到localStorage
-  const newDraft = { ...draftForm }
-  let localDrafts = JSON.parse(localStorage.getItem('draftList') || '[]')
-  // 避免重复添加
-  if (!localDrafts.find(d => d.draft_code === newDraft.draft_code)) {
-    localDrafts.push(newDraft)
-    localStorage.setItem('draftList', JSON.stringify(localDrafts))
-  }
-  // 返回index页面
-  router.push({ path: '/audit-draft' })
+  formRef.value.validate((valid) => {
+    if (!valid) return
+    // 保存到localStorage
+    const newDraft = { ...draftForm }
+    let localDrafts = JSON.parse(localStorage.getItem('draftList') || '[]')
+    // 避免重复添加
+    if (!localDrafts.find(d => d.draft_code === newDraft.draft_code)) {
+      localDrafts.push(newDraft)
+      localStorage.setItem('draftList', JSON.stringify(localDrafts))
+    }
+    // 返回index页面
+    router.push({ path: '/audit-draft' })
+  })
 }
 </script>
 

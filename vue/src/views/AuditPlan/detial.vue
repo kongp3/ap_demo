@@ -15,6 +15,7 @@
                 :remote-method="remoteProjectSearch"
                 :loading="projectLoading"
                 style="width: 100%"
+                :disabled="true"
               >
                 <el-option
                   v-for="item in projectOptions"
@@ -144,6 +145,7 @@ import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { auditPlanList } from './mock.js'
 import { projectList } from '../ProjectInfo/mock.js'
+import { projectNameList } from '../ProjectInfo/mock.js'
 
 const route = useRoute()
 const mode = ref(route.query.mode || 'add')
@@ -217,6 +219,14 @@ onMounted(() => {
       fileList.value = []
     }
   } else {
+    // 新增时，项目名称默认选中当前面包屑项目
+    const savedCode = localStorage.getItem('global_project_code')
+    if (savedCode) {
+      const project = projectNameList.find(p => p.project_code === savedCode)
+      if (project) {
+        planForm.project_name = project.project_name
+      }
+    }
     treeData.value = [
       { item_code: '03', item_name: '审计事项库', details: {}, childs: [] }
     ]
