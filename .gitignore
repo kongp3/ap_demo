@@ -13,6 +13,7 @@ __pycache__/
 build/
 develop-eggs/
 dist/
+node_modules/
 downloads/
 eggs/
 .eggs/
@@ -111,3 +112,15 @@ venv.bak/
 *.zip
 pay.html
 static/keys/WC5985c907cc8e2.key
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+*.tsbuildinfo
