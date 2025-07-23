@@ -1,7 +1,10 @@
-class DocumentArchiveModel:
-    def __init__(self, id, project_id, file_name, file_path, remark):
-        self.id = id
-        self.project_id = project_id
-        self.file_name = file_name
-        self.file_path = file_path
-        self.remark = remark 
+from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from app.util.database import Base
+
+class DocumentArchive(Base):
+    __tablename__ = 'document_archive'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    project_id = Column(Integer, ForeignKey('project_info.id'), nullable=False, comment='所属项目')
+    file_name = Column(String(256), nullable=False, comment='文件名')
+    file_path = Column(String(512), nullable=False, comment='文件路径')
+    remark = Column(Text, comment='备注') 

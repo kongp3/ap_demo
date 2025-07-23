@@ -323,7 +323,7 @@ onDeactivated(() => {
 async function loadDraftInfoFromApi() {
   try {
     const { data } = await fetchDraftInfo()
-    draftForm.project_name = data.project_name || ''
+    // draftForm.project_name = data.project_name || ''
     draftForm.draft_name = data.name || ''
     draftForm.draft_code = data.code || ''
     draftForm.audit_unit = data.company_name || ''

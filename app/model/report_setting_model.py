@@ -1,7 +1,10 @@
-class ReportSettingModel:
-    def __init__(self, id, project_id, setting_name, value, remark):
-        self.id = id
-        self.project_id = project_id
-        self.setting_name = setting_name
-        self.value = value
-        self.remark = remark 
+from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from app.util.database import Base
+
+class ReportSetting(Base):
+    __tablename__ = 'report_setting'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    project_id = Column(Integer, ForeignKey('project_info.id'), nullable=False, comment='所属项目')
+    setting_name = Column(String(128), nullable=False, comment='设定项名称')
+    value = Column(String(256), nullable=False, comment='设定值')
+    remark = Column(Text, comment='备注') 

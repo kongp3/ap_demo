@@ -7,15 +7,15 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 SOFTWARE_NAME = '智能审计系统'
 VERSION = 'V1.0'
-MAX_LINES = 3200
+MAX_LINES = 1600
 
 # 支持的源码文件后缀
-CODE_SUFFIX = ['.py', '.js', '.ts', '.vue', '.html', '.css']
+CODE_SUFFIX = ['.py', '.ts', '.vue', '.html', '.css']
 
 # 注释正则
 COMMENT_PATTERNS = {
     '.py': re.compile(r'^\s*#'),
-    '.js': re.compile(r'^\s*//'),
+    # '.js': re.compile(r'^\s*//'),
     '.ts': re.compile(r'^\s*//'),
     '.vue': re.compile(r'^\s*//|^\s*<!--|^\s*\*|^\s*<\!--'),
     '.html': re.compile(r'^\s*<!--'),
@@ -28,7 +28,7 @@ SENSITIVE_PATTERNS = [
     re.compile(r'1[3-9]\d{9}'), # 手机号
 ]
 
-EXCLUDE_DIRS = {'node_modules', 'public', '.vscode', '__pycache__'}
+EXCLUDE_DIRS = {'node_modules', 'public', 'icons', '.vscode', '__pycache__'}
 
 def is_comment(line, ext):
     pat = COMMENT_PATTERNS.get(ext, None)
@@ -64,11 +64,12 @@ def extract_valid_lines(filepath):
             valid_lines.append(line)
     return valid_lines
 
-START_LINE_NUM = 1  # 新增：自定义起始行号
+START_LINE_NUM = 1601  # 新增：自定义起始行号
 
 def main():
     # 只遍历后端app和前端src目录
-    code_files = collect_code_files(['app', 'app/static/src'])
+    # code_files = collect_code_files(['app', 'app/static/src'])
+    code_files = collect_code_files(['app/static/src'])
     all_lines = []
     for file in code_files:
         valid = extract_valid_lines(file)
@@ -100,8 +101,8 @@ def main():
         code_p.paragraph_format.left_indent = Pt(12)
         code_p.style = style
         code_p.add_run(f'{idx}: {line}')
-    doc.save('soft_zhuzhu.docx')
-    print(f'已生成 soft_zhuzhu.docx, 共{len(code_lines)}行，起始行号为{START_LINE_NUM}')
+    doc.save('soft_zhuzhu1.docx')
+    print(f'已生成 soft_zhuzhu1.docx, 共{len(code_lines)}行，起始行号为{START_LINE_NUM}')
 
 if __name__ == '__main__':
     main()
