@@ -12,7 +12,6 @@
           </el-form-item>
           <el-form-item label="项目类型">
             <el-select v-model="searchForm.type" placeholder="请选择项目类型" clearable style="width: 120px">
-                <el-option label="全部" value="" />
                 <el-option
                     v-for="item in typeOptions"
                     :key="item.value"
@@ -23,7 +22,6 @@
           </el-form-item>
           <el-form-item label="项目状态">
             <el-select v-model="searchForm.state" placeholder="请选择项目状态" clearable style="width: 120px">
-                <el-option label="全部" value="" />
                 <el-option
                     v-for="item in stateOptions"
                     :key="item.value"

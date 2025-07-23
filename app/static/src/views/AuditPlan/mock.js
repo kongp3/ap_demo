@@ -34,21 +34,32 @@ export const auditPlanList = [{
       item_code: "02",
       item_name: "会计科目核实",
       details: {},
-      childs: [{
-          item_code: "021",
+      childs: [
+        {
+            item_code: "021",
+            item_name: "应收账款",
+            details: {
+                item_code: "021", //事项编号
+                item_name: "应收账款管理",//事项名称
+                method: "抽查应收账款明细，核对合同、发票及回款记录，分析账龄结构。",
+                source: "《企业会计准则第14号——收入》",
+                material: "应收账款明细表、合同、发票、回款凭证"
+            },
+        },{
+          item_code: "022",
           item_name: "其他应收款",
           details: {
-              item_code: "021", //事项编号
+              item_code: "022", //事项编号
               item_name: "应收账款管理",//事项名称
               method: "抽查应收账款明细，核对合同、发票及回款记录，分析账龄结构。",
               source: "《企业会计准则第14号——收入》",
               material: "应收账款明细表、合同、发票、回款凭证"
           },
       },{
-        item_code: "022",
+        item_code: "023",
         item_name: "预付账款",
         details: {
-            item_code: "022", //事项编号
+            item_code: "023", //事项编号
             item_name: "预付账款",//事项名称
             method: "检查预付账款合同、付款凭证，核实预付对象及用途。",
             source: "《企业会计准则第14号——收入》",
@@ -164,20 +175,30 @@ export const auditPlanList = [{
       item_name: "会计科目核实",
       details: {},
       childs: [{
-          item_code: "021",
+            item_code: "021",
+            item_name: "应收账款",
+            details: {
+                item_code: "021", //事项编号
+                item_name: "应收账款管理",//事项名称
+                method: "抽查应收账款明细，核对合同、发票及回款记录，分析账龄结构。",
+                source: "《企业会计准则第14号——收入》",
+                material: "应收账款明细表、合同、发票、回款凭证"
+            },
+        },{
+          item_code: "022",
           item_name: "其他应收款",
           details: {
-              item_code: "021", //事项编号
+              item_code: "022", //事项编号
               item_name: "应收账款管理",//事项名称
               method: "",//审计程序和方法
               source: "",//相关法律法规和监管规定
               material: ""//需提供材料
           },
       },{
-        item_code: "022",
+        item_code: "023",
         item_name: "预付账款",
         details: {
-            item_code: "022", //事项编号
+            item_code: "023", //事项编号
             item_name: "预付账款",//事项名称
             method: "",//审计程序和方法
             source: "",//相关法律法规和监管规定
@@ -293,20 +314,30 @@ export const auditPlanList = [{
       item_name: "会计科目核实",
       details: {},
       childs: [{
-          item_code: "021",
+            item_code: "021",
+            item_name: "应收账款",
+            details: {
+                item_code: "021", //事项编号
+                item_name: "应收账款管理",//事项名称
+                method: "抽查应收账款明细，核对合同、发票及回款记录，分析账龄结构。",
+                source: "《企业会计准则第14号——收入》",
+                material: "应收账款明细表、合同、发票、回款凭证"
+            },
+        },{
+          item_code: "022",
           item_name: "其他应收款",
           details: {
-              item_code: "021", //事项编号
+              item_code: "022", //事项编号
               item_name: "应收账款管理",//事项名称
               method: "",//审计程序和方法
               source: "",//相关法律法规和监管规定
               material: ""//需提供材料
           },
       },{
-        item_code: "022",
+        item_code: "023",
         item_name: "预付账款",
         details: {
-            item_code: "022", //事项编号
+            item_code: "023", //事项编号
             item_name: "预付账款",//事项名称
             method: "",//审计程序和方法
             source: "",//相关法律法规和监管规定
